@@ -3,6 +3,17 @@
 set -euo pipefail
 
 AI_HOME="$HOME/.ai"
+DRY_RUN="${DRY_RUN:-0}"
+
+run() {
+  if [[ "$DRY_RUN" == "1" ]]; then
+    printf '[dry-run]'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
 
 if [[ ! -f "$AI_HOME/GLOBAL.md" ]]; then
   echo "Missing $AI_HOME/GLOBAL.md" >&2
@@ -13,17 +24,22 @@ backup_and_link() {
   local source="$1"
   local target="$2"
 
-  mkdir -p "$(dirname "$target")"
+  run mkdir -p "$(dirname "$target")"
 
   if [[ -L "$target" ]]; then
-    rm "$target"
+    run rm "$target"
   elif [[ -e "$target" ]]; then
     local backup="${target}.backup"
+
+    if [[ -e "$backup" || -L "$backup" ]]; then
+      backup="${target}.backup.$(date +%Y%m%d%H%M%S)"
+    fi
+
     echo "Backing up: $target -> $backup"
-    mv "$target" "$backup"
+    run mv "$target" "$backup"
   fi
 
-  ln -s "$source" "$target"
+  run ln -s "$source" "$target"
   echo "Linked: $target -> $source"
 }
 
@@ -33,16 +49,16 @@ link_dir() {
 
   [[ -d "$source" ]] || return 0
 
-  mkdir -p "$(dirname "$target")"
+  run mkdir -p "$(dirname "$target")"
 
   if [[ -L "$target" ]]; then
-    rm "$target"
+    run rm "$target"
   elif [[ -e "$target" ]]; then
     echo "Skip existing non-symlink: $target"
     return 0
   fi
 
-  ln -s "$source" "$target"
+  run ln -s "$source" "$target"
   echo "Linked: $target -> $source"
 }
 
@@ -82,7 +98,11 @@ echo
 echo "==> Codex agents"
 
 if [[ -x "$AI_HOME/scripts/sync-codex-agents.sh" ]]; then
-  "$AI_HOME/scripts/sync-codex-agents.sh"
+  if [[ "$DRY_RUN" == "1" ]]; then
+    echo "[dry-run] would sync Codex agents"
+  else
+    "$AI_HOME/scripts/sync-codex-agents.sh"
+  fi
 else
   echo "Skip: sync-codex-agents.sh not found or not executable"
 fi
@@ -90,9 +110,15 @@ fi
 echo
 echo "==> Scripts"
 
-if [[ -d "$AI_HOME/scripts" ]]; then
-  chmod +x "$AI_HOME"/scripts/*.sh 2>/dev/null || true
-fi
+for script in "$AI_HOME"/scripts/*.sh; do
+  [[ -f "$script" ]] || continue
+  run chmod +x "$script"
+done
 
 echo
-echo "AI bootstrap complete."
+
+if [[ "$DRY_RUN" == "1" ]]; then
+  echo "AI bootstrap dry run complete. Nothing changed."
+else
+  echo "AI bootstrap complete."
+fi
