@@ -21,17 +21,11 @@ description: >-
 
 Retrieve current documentation and code examples for any library using the Context7 CLI.
 
-Run commands with `ctx7` so setup always uses the latest CLI without a global install:
+Use globally installed `ctx7` CLI:
 
 ```bash
 ctx7 library <name> "<query>"
 ctx7 docs <libraryId> "<query>"
-```
-
-Optionally install globally if you prefer a bare `ctx7` command:
-
-```bash
-npm install -g ctx7@latest
 ```
 
 ## Workflow
