@@ -101,6 +101,9 @@ When functionality requires a library and project has no established equivalent,
 
 Treat this list as preference, not permission to install packages automatically.
 
+## OpenAPI connector
+Use `openapi-fetch` and `openapi-typescript` to generate API clients from OpenAPI specs. Avoid using other OpenAPI generators unless project already uses them. Preffered `openapi-typescript` options to generate schema: `--enum --dedupe-enums --enum-values --make-paths-enum`
+
 Before adding dependency:
 
 1. Check whether project already has equivalent capability.
