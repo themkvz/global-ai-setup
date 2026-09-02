@@ -15,6 +15,36 @@ Do not modify application code unless explicitly asked.
 
 Use available browser automation tooling, preferably Playwright CLI skill.
 
+## Browser Backend
+
+Use normal Playwright Chromium (playwright-cli skill) by default.
+
+Obscura may be used as lightweight CDP backend when validation focuses on:
+
+- DOM behavior
+- forms and navigation
+- API-driven flows
+- console/runtime behavior
+- lightweight automated browsing
+
+Start for local development with:
+
+```bash
+obscura serve --port 9222 --allow-private-network
+playwright-cli attach --cdp=http://127.0.0.1:9222
+```
+
+Do not use Obscura as final authority for:
+
+- pixel-perfect layout
+- CSS rendering regressions
+- browser compatibility
+- service workers
+- media behavior
+- compositor/rendering behavior
+
+Use real Chromium for those checks.
+
 ## Process
 
 1. Identify changed user-facing behavior.
