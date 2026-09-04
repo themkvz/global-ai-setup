@@ -31,6 +31,7 @@ Do not invent authentication behavior that the API does not support.
 - Mobile talks to API directly and owns its local token state.
 - Browser must not receive or store API access/refresh tokens directly.
 - Authorization must always be enforced by API, even if BFF also checks claims for UI/routing.
+- BFF may decode access-token claims without verifying the signature, for redirects and UI only — the token arrived through the BFF's own trusted session store, and every request that acts on those claims is re-verified by the API. Never branch on decoded claims for anything the API does not independently enforce.
 
 ## Browser
 
@@ -245,8 +246,12 @@ Server-side session stores:
 ```text
 accessToken
 refreshToken
-accessTokenExpiresAt
+accessTokenExpiresAt   (only if refreshing proactively)
 ```
+
+A purely reactive `401 → refresh → retry` client never reads the expiry.
+Do not store it just because the API returns it — either use it for
+proactive refresh or drop it at the session boundary.
 
 Browser never receives API tokens.
 
@@ -339,6 +344,27 @@ multiple 401 responses
 BFF should dedupe refresh by web session.
 
 Mobile should share one refresh promise/operation across requests.
+
+A per-API-client-instance promise only dedupes requests that share that
+instance. If the BFF builds one client per incoming HTTP request, two
+concurrent browser requests (second tab, document load racing a form
+submission) each present the same refresh token, and reuse detection
+revokes the whole family — a silent forced logout under ordinary use.
+
+Pick one:
+
+```text
+A. Rotation grace window (simpler)
+   rotated token stays accepted for ~10-30s
+   and returns the successor pair it already minted
+   → concurrent refreshes converge, no family revocation
+
+B. Cross-request lock (Valkey SET NX on sess:<id>:refresh)
+   loser waits, then re-reads the session's new access token
+```
+
+Grace window is the smaller change and removes the race at the source.
+Note it weakens reuse detection within that window; that is the trade.
 
 ## Refresh Failure
 
@@ -444,10 +470,16 @@ Example logical value:
 sessionId
 → {
     accessToken,
-    refreshToken,
-    accessTokenExpiresAt
+    refreshToken
   }
 ```
+
+Add `accessTokenExpiresAt` only when the BFF actually refreshes ahead of
+expiry. Reactive-only refresh does not need it.
+
+Session TTL must be renewed on every write, and must be >= remaining
+refresh-token lifetime. A session that expires while its refresh token is
+still valid logs the user out for no reason.
 
 ### Expo
 
@@ -495,6 +527,9 @@ issue refresh token
 
 Use a strong password-hashing algorithm suitable for password storage, preferably Argon2id.
 
+Rate-limit credential endpoints (`/sign-in`, password-reset request) at
+the API, not the BFF — mobile bypasses the BFF entirely.
+
 ---
 
 # Login
@@ -539,6 +574,27 @@ exp → expiration
 ```
 
 `aud` identifies API/resource server receiving token, not BFF/web client.
+
+### Authorization Claims
+
+Tenant/role claims (`orgId`, `membershipId`, `role`) may be embedded so
+common routes authorize without a DB read.
+
+Cost: claims are stale until the next refresh. Accept that for
+member-level access; do not accept it for elevated access — see
+Authorization Strategy.
+
+When authorization state changes mid-session (user joins an org, creates
+one, changes tenant), issue a **new access token only** and swap it into
+the existing session. Do not rotate the refresh token and do not rotate
+the session ID for a claims change.
+
+```text
+claims changed
+→ new accessToken
+→ overwrite accessToken in session
+→ same refreshToken, same sessionId, same cookie
+```
 
 ## Refresh Token
 
@@ -616,6 +672,11 @@ issuer
 audience
 ```
 
+JWT libraries commonly verify signature and `exp` only. `@elysia/jwt`'s
+`verify()` does **not** enforce `iss`/`aud` unless passed per call. Route
+every verification through one helper that checks all four explicitly,
+rather than assuming the library does it.
+
 Then:
 
 ```text
@@ -638,6 +699,11 @@ Common authenticated/member-level routes may rely on verified claims only.
 Security-sensitive elevated operations may re-check current membership/account state in PostgreSQL when immediate demotion/block/removal behavior is required.
 
 Do not add a global DB-backed `/session-status` check to every protected request.
+
+Concretely: guard for member-level access from claims alone; for
+manager/owner-level access, re-read the membership row by primary key and
+re-check existence, block state, and current role before proceeding. One
+indexed lookup on privileged routes only.
 
 ---
 
@@ -716,6 +782,10 @@ Then retry original resource request once.
 
 Refresh deduplication must work across parallel requests sharing same session, not only inside one local API-client instance.
 
+When refresh fails, clearing the browser cookie is not enough — delete the
+server-side session key too. A cookie-only logout leaves a live session
+holding valid-shaped tokens until its TTL expires.
+
 ---
 
 # Mobile Refresh
@@ -791,6 +861,8 @@ For privileged routes requiring immediate revocation semantics, re-check current
 | API owns authorization | Yes | Yes | Yes |
 | Refresh state persistence | N/A | API-owned | PostgreSQL |
 | Browser session persistence | BFF-owned | BFF-owned | Valkey |
+| Authz claims in access token | API-dependent | API-dependent | Optional, staleness-bounded |
+| Refresh dedup scope | N/A | Per session | Per session |
 
 ---
 
@@ -808,6 +880,11 @@ Do not:
 - use BFF/web client identifier as JWT `aud` when API is resource server
 - query DB on every authenticated request solely to emulate revocation
 - add separate auth service/OIDC infrastructure without a real multi-client/SSO requirement
+- dedupe refresh per API-client instance when clients are built per request
+- rotate the refresh token or session ID for an authorization-claims change
+- clear the browser cookie on logout/refresh failure without deleting the server-side session
+- store `accessTokenExpiresAt` in the session while refreshing purely reactively
+- assume a JWT library checks `iss`/`aud` by default
 
 ---
 
