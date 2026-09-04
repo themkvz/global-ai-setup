@@ -30,6 +30,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │
 ├── skills/
 │   ├── bff-api-architecture-flow/
+│   ├── bff-api-client/
 │   ├── find-docs/
 │   ├── playwright-cli/
 │   └── preferred-stack/
@@ -169,7 +170,33 @@ ctx7 docs <library-id> "<query>"
 
 Chooses authentication architecture for React Router v7+ Framework Mode BFFs, external REST/Spring Boot/Elysia APIs, Valkey-backed web sessions, PostgreSQL-backed refresh tokens, and Expo mobile clients.
 
+Covers three modes:
+
+```text
+external API, one token
+API with access + refresh tokens
+own full-stack monorepo
+```
+
+Constant across all three: API tokens stay server-side, the browser holds only an opaque session ID, `401` ends the session and `403` does not.
+
 Use when implementing login, registration, session handling, access/refresh tokens, retry behavior, logout, token storage, or authorization boundaries.
+
+### `bff-api-client`
+
+Wires the server-side API client inside a React Router v7+ Framework Mode BFF.
+
+```text
+createApiClient()   per-request factory
+apiClientContext    React Router context
+requireSession      middleware builds client, sets context
+<domain>.server.ts  one thin fn per endpoint
+route loader        reads client from context
+```
+
+The route never builds a client and never sees a token, so auth headers, `401` handling, correlation IDs, timeouts, and logging stay in one file.
+
+Use when adding an API call to a loader, action, or resource route, adding an endpoint wrapper, creating a protected or guest route layout, writing auth middleware, or testing a wrapper or loader.
 
 ### `playwright-cli`
 
