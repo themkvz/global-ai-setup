@@ -29,6 +29,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   └── security-reviewer.md
 │
 ├── skills/
+│   ├── bff-api-architecture-flow/
 │   ├── find-docs/
 │   ├── playwright-cli/
 │   └── preferred-stack/
@@ -163,6 +164,12 @@ Use when implementation depends on version-specific behavior, configuration, mig
 ctx7 library <name> "<query>"
 ctx7 docs <library-id> "<query>"
 ```
+
+### `bff-api-architecture-flow`
+
+Chooses authentication architecture for React Router v7+ Framework Mode BFFs, external REST/Spring Boot/Elysia APIs, Valkey-backed web sessions, PostgreSQL-backed refresh tokens, and Expo mobile clients.
+
+Use when implementing login, registration, session handling, access/refresh tokens, retry behavior, logout, token storage, or authorization boundaries.
 
 ### `playwright-cli`
 
