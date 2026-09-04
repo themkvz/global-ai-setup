@@ -64,10 +64,21 @@ If API returns one long-lived token:
 
 Do not persist secrets in AsyncStorage.
 
+AsyncStorage is fine for non-secret local state (drafts, theme, read
+flags). If a persisted query cache is used, remember it stores API
+*response* data at rest unencrypted — exclude anything the API only
+returns to an authenticated caller and would not want on a dumped device,
+and clear it on logout together with the token.
+
 ## HTTP semantics
 
 - `401 Unauthorized`: missing, invalid, or expired credential.
 - `403 Forbidden`: authenticated user lacks permission.
+- Handle the two differently. `401` ends the session. `403` does not — the
+  credential is still valid, the user just cannot reach that resource. Render
+  a forbidden state or redirect within the app; never destroy the session.
+  Collapsing `403` into `401` turns one over-restricted route into a
+  full logout, and hides authorization bugs as "random sign-outs".
 - Retry original request at most once after refresh.
 - Never create infinite refresh/retry loops.
 
@@ -115,14 +126,13 @@ Browser
 → BFF
 → API /sign-in
 → token
-→ BFF server-side session
-→ opaque sessionId cookie
+→ BFF session
+→ session cookie
 → Browser
 ```
 
-BFF stores API token server-side.
-
-Browser receives only opaque session ID.
+BFF holds the API token; the browser gets only the session cookie. See
+Web Session Storage below for what that cookie actually carries.
 
 ### Mobile
 
@@ -133,6 +143,78 @@ Expo
 → token
 → SecureStore
 ```
+
+## Web Session Storage
+
+Store the API token server-side (Valkey/Redis) and give the browser only
+an opaque session ID. This holds in Mode 1 too — a single-token API is a
+reason to skip refresh logic, not a reason to skip the session store.
+
+```text
+cookie  = opaque sessionId, HttpOnly + Secure + SameSite
+session = { token }, server-side, keyed by sessionId, with a TTL
+```
+
+### Migrating Off a Cookie-Payload Session
+
+React Router's `createCookieSessionStorage` keeps the whole session value
+*in the cookie*. Putting the API token there is a common starting point
+and a known-bad end state:
+
+- the token leaves the server and sits in the browser's cookie jar, on
+  disk, replayed on every BFF request. `HttpOnly` stops JS, not a stolen
+  cookie file or a compromised proxy.
+- signed is not encrypted. Anyone holding the cookie reads the token.
+- logout is cookie-only. A copied cookie keeps working until the API
+  token's own expiry — there is nothing server-side to delete, and no way
+  to kill a session from the admin side.
+- the 4KB cookie limit caps the payload, so identity data competes with
+  the token for space.
+
+Migration is contained — the cookie stays, its contents change:
+
+```text
+cookie payload { token, ...user }   →   cookie payload { sessionId }
+                                        store: sessionId → { token, ...user }
+```
+
+Everything above the session helper (middleware, API client, routes) is
+untouched. Existing cookies fail the read and land the user on login once.
+
+A session holding a refresh token must be server-side, always — never a
+cookie payload. So if the API later gains access/refresh tokens, this
+migration is a prerequisite, not an optional cleanup.
+
+### What the Session Holds
+
+```text
+required: the API token
+useful:   identity/role fields the login response already returned,
+          for rendering and route gating
+never:    anything the API would not re-derive and re-authorize itself
+```
+
+Caching identity in the session avoids a `GET /me` on every navigation.
+It goes stale — accept staleness for chrome (name, avatar, nav items), and
+let the API's `403` be the real gate.
+
+Do not call `GET /me` from a middleware that runs on every protected
+request. That is one extra round trip on every navigation to emulate
+revocation the single-token API cannot give you anyway. Fetch it at login,
+store it in the session, and refresh it on the routes that need it fresh.
+
+### Cookie Lifetime
+
+Cookie `maxAge` must not outlive the API token it carries or points at.
+
+```text
+cookie maxAge  30 days
+API token exp   1 hour
+→ 29 days of looking signed in, then a 401 on the first action
+```
+
+Match the cookie's `maxAge` to the token's lifetime, or accept and handle
+the mid-session logout explicitly. Do not pick 30 days by habit.
 
 ## Protected Request
 
@@ -171,7 +253,7 @@ request
 
 Web:
 
-- delete server-side session
+- delete server-side session (store model A)
 - clear browser cookie
 - redirect to login
 
@@ -179,6 +261,10 @@ Mobile:
 
 - delete token from secure storage
 - return to unauthenticated state
+
+Only a `401` triggers this. A `403` from a protected route means the token
+is valid and the user lacks permission — show the forbidden state, keep
+the session.
 
 Do not implement a fake refresh mechanism in BFF.
 
@@ -852,11 +938,12 @@ For privileged routes requiring immediate revocation semantics, re-check current
 |---|---|---|---|
 | Browser stores API token | No | No | No |
 | Browser credential | BFF session | BFF session | BFF session ID |
-| Server-side web token storage | Yes | Yes | Valkey |
+| Web session storage | Server-side | Server-side | Valkey |
 | Mobile persistent credential | Single token | Refresh token | Refresh token |
 | Mobile access token | API-dependent | Memory | Memory |
 | Refresh supported | No | Yes | Yes |
 | 401 behavior | Login again | Refresh + retry | Refresh + retry |
+| 403 behavior | Forbidden UI, keep session | Forbidden UI, keep session | Forbidden UI, keep session |
 | Refresh rotation | N/A | Prefer/contract | Required |
 | API owns authorization | Yes | Yes | Yes |
 | Refresh state persistence | N/A | API-owned | PostgreSQL |
@@ -885,6 +972,14 @@ Do not:
 - clear the browser cookie on logout/refresh failure without deleting the server-side session
 - store `accessTokenExpiresAt` in the session while refreshing purely reactively
 - assume a JWT library checks `iss`/`aud` by default
+- treat `403` as `401` and destroy the session on a permission denial
+- keep the API token in the cookie payload instead of a server-side
+  session, single-token API included
+- set a 14/30-day session cookie in front of a short-lived API token
+- call `GET /me` from a middleware on every protected request to emulate
+  revocation a single-token API does not support
+- persist authenticated API responses to unencrypted mobile storage and
+  leave them there after logout
 
 ---
 
@@ -898,7 +993,12 @@ Respect API contract.
 Web → BFF session → API token
 Mobile → secure token → API
 401 → login again
+403 → forbidden UI, session intact
 ```
+
+Server-side session store here as well — the single token is the only
+thing simpler about Mode 1. Revisit the whole model, not just the token
+handling, if the API later adds refresh tokens.
 
 ## Existing access/refresh API
 
