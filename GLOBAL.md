@@ -18,13 +18,36 @@
 
 ## Implementation
 
-- Prefer the smallest solution that satisfies the request and fits existing architecture.
-- Follow existing project patterns before introducing new abstractions, dependencies, or conventions.
-- Avoid speculative flexibility and unrelated refactoring.
+- Less code is better; every line is debt. Prefer the smallest solution that satisfies the request and fits existing architecture.
+- Follow existing project patterns before introducing new abstractions, dependencies, or conventions. Existing project conventions override the style defaults below.
+- Avoid speculative flexibility and unrelated refactoring. Report unrelated problems you notice instead of fixing them.
 - Add error handling where failure can realistically enter the system; do not add defensive code against trusted internal guarantees without evidence.
 - Use the project's existing package manager and let it manage lock files.
 - Prefer existing project dependencies or platform/stdlib capabilities before adding a new dependency.
 - Use relevant available skills before implementation. More-specific project or skill rules override these global defaults.
+
+## Code style defaults
+
+Apply to new code and greenfield projects; defer to the project's own config where it differs. Technology choices live in the `preferred-stack` skill.
+
+- Project setup: strict type checking, lint + format enforced by a pre-commit hook, containerized, with an example env file.
+- Formatting: 2-space indent, single quotes, no semicolons, ~100 line width, auto-sorted imports, path alias instead of deep relative imports.
+- Structure: organize by feature/domain; each feature owns its data access, validation, and components. Shared generic code in a common layer. Backend modules separate route definitions, handlers, and validation.
+- Naming: kebab-case files, PascalCase components/types, camelCase functions/variables, SCREAMING_SNAKE constants. `is`/`has` booleans, `handle` event handlers, `use` hooks. Named constants instead of magic numbers, with the unit noted.
+- Types and validation: validate every external input (env, forms, requests, API responses) with a schema; keep the schema and its inferred type together. Generate types from the source of truth (OpenAPI, DB schema) instead of hand-writing them.
+- Code: early returns over nesting; small pure functions; functions and closures over classes; immutable updates; independent async work in parallel.
+- State: URL for navigation state, query cache for server state, a small store for client-only state.
+- Errors: the data layer logs with context and returns a safe fallback; the route/HTTP layer maps failures to status codes and user-facing messages.
+- Security: hashed passwords, httpOnly/secure cookies, generic auth error messages, no stack traces in production.
+- UI: accessible components with variant-based APIs
+- Tests: cover the risky core (state logic, auth, error handling), not coverage numbers. Behavior-named, integration-style where practical.
+
+Avoid these recurring mistakes:
+
+- Returning an un-awaited promise inside try/catch, so the catch never fires.
+- Leaving commented-out code or debug logs.
+- Repeating markup instead of mapping over data.
+- Typos in identifiers or UI strings; mixing languages in user-facing messages.
 
 ## Verification
 
