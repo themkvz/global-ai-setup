@@ -31,6 +31,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 ├── skills/
 │   ├── bff-api-architecture-flow/
 │   ├── bff-api-client/
+│   ├── design-patterns/
 │   ├── find-docs/
 │   ├── playwright-cli/
 │   └── preferred-stack/
@@ -197,6 +198,17 @@ route loader        reads client from context
 The route never builds a client and never sees a token, so auth headers, `401` handling, correlation IDs, timeouts, and logging stay in one file.
 
 Use when adding an API call to a loader, action, or resource route, adding an endpoint wrapper, creating a protected or guest route layout, writing auth middleware, or testing a wrapper or loader.
+
+### `design-patterns`
+
+Finds the design pattern that fits a concrete situation, or rejects one when a plain TypeScript feature suffices. Catalog and rationale follow refactoring.guru; examples are rewritten as idiomatic TypeScript (functions, closures, discriminated unions) with the class form noted where it earns its place.
+
+```text
+SKILL.md                 symptom → pattern table, rules, anti-signals
+references/<pattern>.md  intent, use when, do not use when, TS example, pitfalls, related
+```
+
+Use when structuring new code, refactoring conditionals, duplication, or coupling, reviewing an abstraction, or when a pattern is named.
 
 ### `playwright-cli`
 
