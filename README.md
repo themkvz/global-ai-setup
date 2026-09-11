@@ -34,7 +34,8 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   ├── design-patterns/
 │   ├── find-docs/
 │   ├── playwright-cli/
-│   └── preferred-stack/
+│   ├── preferred-stack/
+│   └── wait-what/
 │
 └── scripts/
     ├── verify-project.sh
@@ -221,6 +222,16 @@ Provides browser automation for frontend validation:
 * network failures
 * screenshots
 * user flows
+
+### `wait-what`
+
+User-invoked only. Re-pitches the last message when it did not land: short context, the same content rewritten in ASD-STE100 Simplified Technical English, then the next action.
+
+Vocabulary comes from the project, in order: project instructions (`CLAUDE.md`, `AGENTS.md`), OpenSpec specs and changes, project docs, then identifiers in the code.
+
+```text
+/wait-what
+```
 
 ## Agents
 
