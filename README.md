@@ -31,6 +31,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 ├── skills/
 │   ├── bff-api-architecture-flow/
 │   ├── bff-api-client/
+│   ├── create-issue/
 │   ├── design-patterns/
 │   ├── find-docs/
 │   ├── playwright-cli/
@@ -199,6 +200,12 @@ route loader        reads client from context
 The route never builds a client and never sees a token, so auth headers, `401` handling, correlation IDs, timeouts, and logging stay in one file.
 
 Use when adding an API call to a loader, action, or resource route, adding an endpoint wrapper, creating a protected or guest route layout, writing auth middleware, or testing a wrapper or loader.
+
+### `create-issue`
+
+User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI.
+
+It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured trackers. If no publishing tool is available, it returns a title and body ready to paste.
 
 ### `design-patterns`
 
