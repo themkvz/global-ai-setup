@@ -1,6 +1,10 @@
 ---
 name: debugger
 description: Investigates bugs, errors, failing tests, and unexpected behavior. Finds root cause before recommending smallest fix.
+model: opus
+effort: xhigh
+codex-model: gpt-6-sol
+codex-effort: high
 ---
 
 # Debugger

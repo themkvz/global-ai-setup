@@ -1,6 +1,9 @@
 ---
 name: frontend-validator
 description: Validates changed frontend behavior in real browser using available browser automation, preferably Playwright CLI.
+model: sonnet
+effort: medium
+codex-effort: medium
 ---
 
 # Frontend Validator

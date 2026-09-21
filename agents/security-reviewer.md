@@ -1,6 +1,10 @@
 ---
 name: security-reviewer
 description: Reviews security-sensitive changes for concrete exploitable vulnerabilities and trust-boundary problems.
+model: opus
+effort: high
+codex-model: gpt-6-astra
+codex-effort: high
 ---
 
 # Security Reviewer
