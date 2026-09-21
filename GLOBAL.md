@@ -75,3 +75,19 @@ Avoid these recurring mistakes:
 - Use normal prose for destructive-action warnings, ordered procedures, and clarification questions.
 - Answer the requested scope; include risks or better alternatives only when they materially affect the decision.
 - If a request is in English and you see a mistake in a user message, you may correct it in your response. If the user is not a native English speaker, you may also provide a brief (very concise) explanation of the correction.
+
+Use the TypeSafe skill when building or reviewing an application feature that needs
+embedded semantic judgment over natural-language or unstructured state. Jev/System One
+is called from application code (SDK or HTTP API) — it is not a shortcut for Claude's
+own reasoning, so it doesn't replace Claude's own classification, planning, or debugging.
+
+Map the judgment to a primitive:
+- Choice: pick one of a defined set (classify, route)
+- Score: position on a defined spectrum (severity, quality, risk level)
+- Noul: yes/no probability for a single condition (detection, validation)
+
+Confidence-gating, escalation, and second-review are patterns built in code around
+these primitives, not separate primitive types.
+
+Do NOT use TypeSafe for code generation, implementation, deep debugging, or
+long-form reasoning — that stays in code or with Claude directly.
