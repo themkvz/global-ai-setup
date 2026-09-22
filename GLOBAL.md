@@ -91,3 +91,14 @@ these primitives, not separate primitive types.
 
 Do NOT use TypeSafe for code generation, implementation, deep debugging, or
 long-form reasoning — that stays in code or with Claude directly.
+
+## Model routing
+
+Proactively delegate useful, independent subtasks. Choose the least expensive model suited to the work:
+- gpt luna/claude haiku / medium: Focused searches, summaries, and mechanical edits.
+- gpt terra/claude sonnet / medium: Routine implementation and bounded bug fixes.
+- gpt sol/claude opus / high: Difficult debugging, design, and correctness reviews.
+- gpt astra/claude opus / high: Exceptionally hard problems or unresolved blockers after a cheaper model has made a meaningful attempt.
+
+Explicitly select the model and reasoning effort when spawning each subagent. Give it a focused brief rather than copying the entire conversation.
+Keep simple tasks with the main agent. Avoid duplicate work and overlapping file ownership. Subagents should return concise results and evidence. The main agent integrates and verifies their work.
