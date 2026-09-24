@@ -1,123 +1,79 @@
 ---
 name: preferred-stack
-description: Apply preferred technologies, libraries, and tooling when choosing dependencies, starting greenfield projects, designing architecture, or selecting between equivalent implementation options. Do not use to replace an existing project's established stack without explicit reason.
+description: Preferred technologies, libraries, and tooling for choosing dependencies, starting greenfield projects, designing architecture, or picking between equivalent options. Use before adding a dependency or scaffolding a project. Never use it to replace an existing project's established stack without an explicit reason.
 ---
 
 # Preferred Stack
 
-Use these as defaults when project does not already establish another choice.
+Defaults for when the project has not already made the choice.
 
 ## Priority
 
-Follow this order:
-
 1. Existing project architecture and dependencies.
 2. Project-level specs and instructions.
-3. This preferred stack.
+3. This list.
 4. General ecosystem defaults.
 
-Do not migrate existing code only to match these preferences.
+Do not migrate existing code to match these preferences. When a preference conflicts with the project, the project wins; when you deviate from this list, give the reason in one line. Mention this skill only when it explains a decision.
 
-Do not add a dependency when existing project code or platform APIs solve problem cleanly.
+## Before adding a dependency
 
-## JavaScript / TypeScript
+1. The project or the platform already covers it? Use that.
+2. The project already has a competing library? Use that one.
+3. It fits the current architecture and the benefit is concrete? Then add it, with the project's package manager.
 
-Prefer:
+Listed packages are preferences, not permission to install.
 
-* TypeScript
-* Bun runtime where compatible
-* latest stable Node.js when Bun is unsuitable
-* `bun` / `bunx`
-* Biome for linting and formatting
-* Bun Test or Vitest
-* Valibot or Zod for validation
+## TypeScript / JavaScript
 
-Avoid introducing unless project already uses or specifically needs them:
-
-* npm
-* yarn
-* ESLint
-* Prettier
-* Jest
+| Concern | Prefer | Avoid introducing |
+|---|---|---|
+| Language | TypeScript | |
+| Runtime and package manager | Bun (`bun`, `bunx`); latest stable Node.js where Bun is unsuitable | npm, yarn |
+| Lint and format | Biome | ESLint, Prettier |
+| Tests | Bun Test or Vitest | Jest |
+| Validation | Valibot or Zod (TypeBox on the backend) | |
+| Git hooks | `lefthook` | |
+| Releases | `release-it` + `@release-it/conventional-changelog` | |
 
 ## Frontend
 
-Prefer:
+| Concern | Prefer | Avoid introducing |
+|---|---|---|
+| Web | React, React Router v7+ Framework Mode | |
+| Mobile | Expo | |
+| Styling and components | Tailwind CSS, shadcn/ui | styled-components, Material UI |
+| Server state | TanStack Query (`@tanstack/react-query`, devtools) | |
+| Client state | Zustand | Redux |
+| URL state | `nuqs` | |
+| Forms and route utilities | `remix-hook-form`, `remix-utils`, `remix-toast` | |
+| Maps | `maplibre-gl` | |
 
-* React
-* React Router Framework Mode v7+
-* Expo for React Native
-* Tailwind CSS
-* shadcn/ui
-* Zustand for client state
-* TanStack Query for server state
-
-Avoid introducing unless justified:
-
-* Redux
-* styled-components
-* Material UI
-
-Use platform/framework capabilities before adding another abstraction.
+Use platform and framework capabilities before adding another abstraction.
 
 ## Backend
 
-Prefer:
+| Concern | Prefer |
+|---|---|
+| Runtime | Bun |
+| HTTP framework | Hono or Elysia |
+| Database | PostgreSQL or MySQL; SQLite for small projects, local tools, and tests |
+| ORM | Drizzle (`drizzle-orm`) |
+| Logging | Pino |
+| Env validation | `@t3-oss/env-*` |
 
-* Bun
-* Hono
-* Elysia
-* TypeScript
-* Drizzle ORM
-* PostgreSQL or MySQL
-* SQLite for small projects, local tools, and tests
-* Valibot, TypeBox, or Zod for validation
-* Pino for structured logging
+## Shared utilities
 
-## Preferred Libraries
+- `ts-pattern` for exhaustive matching
+- `better-result` for typed errors
+- `date-fns` for dates
+- `http-status-codes` instead of numeric literals
+- `ofetch` for plain HTTP calls
 
-When functionality requires a library and project has no established equivalent, prefer evaluating:
+## OpenAPI clients
 
-* `@tanstack/react-query`
-* `@tanstack/react-query-devtools`
-* `@t3-oss/*`
-* `better-result`
-* `date-fns`
-* `drizzle-orm`
-* `http-status-codes`
-* `lefthook`
-* `maplibre-gl`
-* `nuqs`
-* `ofetch`
-* `openapi-fetch`
-* `openapi-typescript`
-* `pino`
-* `remix-hook-form`
-* `remix-utils`
-* `release-it`
-* `@release-it/conventional-changelog`
-* `ts-pattern`
-* `remix-toast`
+Generate types with `openapi-typescript` and call through `openapi-fetch`. Do not add another generator unless the project already uses one. Preferred options:
 
-Treat this list as preference, not permission to install packages automatically.
-
-## OpenAPI connector
-Use `openapi-fetch` and `openapi-typescript` to generate API clients from OpenAPI specs. Avoid using other OpenAPI generators unless project already uses them. Preffered `openapi-typescript` options to generate schema: `--enum --dedupe-enums --enum-values --make-paths-enum`
-
-Before adding dependency:
-
-1. Check whether project already has equivalent capability.
-2. Check whether framework/platform provides suitable built-in solution.
-3. Confirm package fits current architecture.
-4. Prefer existing dependency over introducing competing library.
-5. Add new dependency only when benefit is concrete.
-
-## Decision Behavior
-
-When several valid choices exist, prefer option matching this stack.
-
-When preferred option conflicts with established project architecture, preserve project architecture.
-
-When recommending deviation from this stack, state reason briefly.
-
-Do not mention this skill or preference list unless relevant to decision.
+```bash
+openapi-typescript <spec> -o <out> --enum --dedupe-enums --enum-values --make-paths-enum
+```

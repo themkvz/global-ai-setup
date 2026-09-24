@@ -232,9 +232,7 @@ Provides browser automation for frontend validation:
 
 ### `wait-what`
 
-User-invoked only. Re-pitches the last message when it did not land: short context, the same content rewritten in ASD-STE100 Simplified Technical English, then the next action.
-
-Vocabulary comes from the project, in order: project instructions (`CLAUDE.md`, `AGENTS.md`), OpenSpec specs and changes, project docs, then identifiers in the code.
+User-invoked only. Re-explains the last message like you are five: the big idea, one everyday picture, 3–5 steps told inside it, then a map from the picture back to the real terms and `path:line` references, and the next action. Pass the confusing part to narrow it.
 
 ```text
 /wait-what
