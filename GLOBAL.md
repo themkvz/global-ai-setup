@@ -1,6 +1,6 @@
 # Agent Rules
 
-Precedence: user instruction > project rules (`CLAUDE.md`, `AGENTS.md`, configs) > skill rules > this file.
+Precedence: user instruction &gt; project rules (`CLAUDE.md`, `AGENTS.md`, configs) &gt; skill rules &gt; this file.
 
 ## Judgment and scope
 
@@ -47,8 +47,8 @@ General:
 
 TypeScript/JavaScript:
 
-- 2-space indent, single quotes, no semicolons, ~100 line width, sorted imports, path aliases instead of deep relative imports.
-- kebab-case files, PascalCase components/types, camelCase functions/variables, SCREAMING_SNAKE constants, `handle` event handlers, `use` hooks.
+- 2-space indent, single quotes, no semicolons, \~100 line width, sorted imports, path aliases instead of deep relative imports.
+- kebab-case files, PascalCase components/types, camelCase functions/variables, SCREAMING\_SNAKE constants, `handle` event handlers, `use` hooks.
 - Functions and closures over classes.
 - Frontend state: URL for navigation state, query cache for server state, a small store for client-only state.
 - Accessible UI components with variant-based APIs.
@@ -81,12 +81,14 @@ Avoid:
 - Delegate independent, non-trivial subtasks. Keep simple tasks in the main agent.
 - Pick the cheapest model that fits, and set model and reasoning effort explicitly:
 
-| Work | GPT | Claude | Effort |
-| --- | --- | --- | --- |
-| Focused search, summary, mechanical edit | luna | haiku | medium |
-| Routine implementation, bounded bug fix | terra | sonnet | medium |
-| Hard debugging, design, correctness review | sol | opus | high |
-| A lower tier failed twice, or an unresolved blocker | astra | opus | max |
+
+| Work                                                | GPT   | Claude | Effort |
+| --------------------------------------------------- | ----- | ------ | ------ |
+| Focused search, summary, mechanical edit            | luna  | sonnet | medium |
+| Routine implementation, bounded bug fix             | luna  | opus   | medium |
+| Hard debugging, design, correctness review          | sol   | opus   | high   |
+| A lower tier failed twice, or an unresolved blocker | sol   | opus   | max    |
+
 
 - Give subagents a focused brief with the context they need, not the whole conversation. No overlapping file ownership.
 - Subagents return concise results with evidence; the main agent integrates and verifies them.
