@@ -53,6 +53,11 @@ else
   exit 0
 fi
 
+if [[ ! -d node_modules ]]; then
+  echo "==> No node_modules. Skip package scripts."
+  exit 0
+fi
+
 if ! command -v "$PM" >/dev/null 2>&1; then
   echo "Package manager '$PM' not installed." >&2
   exit 1
