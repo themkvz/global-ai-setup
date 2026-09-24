@@ -1,5 +1,5 @@
 ---
-name: bff-api-client
+name: x-bff-api-client
 description: >
   Wiring the server-side API client in a React Router v7+ Framework Mode BFF:
   the per-request client factory, its React Router context, the auth

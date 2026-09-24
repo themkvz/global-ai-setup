@@ -32,7 +32,7 @@ sync_agent() {
     return 1
   fi
 
-  # Codex-specific model/effort, set via the model-router skill scoped to
+  # Codex-specific model/effort, set via the x-model-router skill scoped to
   # Codex's own catalog. Absent means: inherit Codex's default model/effort.
   local codex_model codex_effort
   codex_model="$(frontmatter_value "codex-model" "$source")"

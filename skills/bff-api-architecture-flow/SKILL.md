@@ -1,5 +1,5 @@
 ---
-name: bff-api-architecture-flow
+name: x-bff-api-architecture-flow
 description: >
   Design and review authentication for a web BFF (React Router v7+ Framework Mode or similar)
   in front of a REST API, optionally with an Expo/mobile client calling the API directly.

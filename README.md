@@ -128,7 +128,7 @@ Reusable specialized instructions live under:
 ~/.ai/skills/
 ```
 
-### `preferred-stack`
+### `x-preferred-stack`
 
 Provides preferred defaults when project does not already establish another choice.
 
@@ -152,13 +152,13 @@ Priority:
 ```text
 existing project
 → project instructions/spec
-→ preferred-stack
+→ x-preferred-stack
 → ecosystem defaults
 ```
 
 Existing project architecture always wins.
 
-### `find-docs`
+### `x-find-docs`
 
 Uses Context7 CLI for current framework/library/API documentation.
 
@@ -169,7 +169,7 @@ ctx7 library <name> "<query>"
 ctx7 docs <library-id> "<query>"
 ```
 
-### `bff-api-architecture-flow`
+### `x-bff-api-architecture-flow`
 
 Chooses authentication architecture for React Router v7+ Framework Mode BFFs, external REST/Spring Boot/Elysia APIs, Valkey-backed web sessions, PostgreSQL-backed refresh tokens, and Expo mobile clients.
 
@@ -185,7 +185,7 @@ Constant across all three: API tokens stay server-side, the browser holds only a
 
 Use when implementing login, registration, session handling, access/refresh tokens, retry behavior, logout, token storage, or authorization boundaries.
 
-### `bff-api-client`
+### `x-bff-api-client`
 
 Wires the server-side API client inside a React Router v7+ Framework Mode BFF.
 
@@ -201,13 +201,13 @@ The route never builds a client and never sees a token, so auth headers, `401` h
 
 Use when adding an API call to a loader, action, or resource route, adding an endpoint wrapper, creating a protected or guest route layout, writing auth middleware, or testing a wrapper or loader.
 
-### `create-issue`
+### `x-create-issue`
 
 User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI.
 
 It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured trackers. If no publishing tool is available, it returns a title and body ready to paste.
 
-### `design-patterns`
+### `x-design-patterns`
 
 Finds the design pattern that fits a concrete situation, or rejects one when a plain TypeScript feature suffices. Catalog and rationale follow refactoring.guru; examples are rewritten as idiomatic TypeScript (functions, closures, discriminated unions) with the class form noted where it earns its place.
 
@@ -218,7 +218,7 @@ references/<pattern>.md  intent, use when, do not use when, TS example, pitfalls
 
 Use when structuring new code, refactoring conditionals, duplication, or coupling, reviewing an abstraction, or when a pattern is named.
 
-### `playwright-cli`
+### `x-playwright-cli`
 
 Provides browser automation for frontend validation:
 
@@ -230,12 +230,12 @@ Provides browser automation for frontend validation:
 * screenshots
 * user flows
 
-### `wait-what`
+### `x-wait-what`
 
 User-invoked only. Re-explains the last message like you are five: the big idea, one everyday picture, 3–5 steps told inside it, then a map from the picture back to the real terms and `path:line` references, and the next action. Pass the confusing part to narrow it.
 
 ```text
-/wait-what
+/x-wait-what
 ```
 
 ## Agents

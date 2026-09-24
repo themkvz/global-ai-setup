@@ -1,5 +1,5 @@
 ---
-name: model-router
+name: x-model-router
 description: Ask Jev (TypeSafe) which available model best fits a task, using the model catalog of the current host (Claude Code, Codex, etc.). Use when the user asks "which model should I use" or "route this to the best model".
 disable-model-invocation: true
 ---

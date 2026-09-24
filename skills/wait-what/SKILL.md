@@ -1,5 +1,5 @@
 ---
-name: wait-what
+name: x-wait-what
 description: "Stop. The last message did not land: explain it again like I am five, with tiny words and an everyday picture, then map it back to the real terms."
 argument-hint: "[the part that confused you]"
 disable-model-invocation: true

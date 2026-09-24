@@ -1,5 +1,5 @@
 ---
-name: preferred-stack
+name: x-preferred-stack
 description: Preferred technologies, libraries, and tooling for choosing dependencies, starting greenfield projects, designing architecture, or picking between equivalent options. Use before adding a dependency or scaffolding a project. Never use it to replace an existing project's established stack without an explicit reason.
 ---
 

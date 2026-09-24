@@ -77,9 +77,9 @@ for skill in "$AI_HOME"/skills/*; do
 
   name="$(basename "$skill")"
 
-  link_dir "$skill" "$HOME/.claude/skills/$name"
-  link_dir "$skill" "$HOME/.agents/skills/$name"
-  link_dir "$skill" "$HOME/.agent/skills/$name"
+  link_dir "$skill" "$HOME/.claude/skills/x-$name"
+  link_dir "$skill" "$HOME/.agents/skills/x-$name"
+  link_dir "$skill" "$HOME/.agent/skills/x-$name"
 done
 
 echo

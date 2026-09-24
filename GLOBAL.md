@@ -32,7 +32,7 @@ Precedence: user instruction &gt; project rules (`CLAUDE.md`, `AGENTS.md`, confi
 
 ## Code style defaults
 
-For new code and greenfield projects when the project has no convention. Technology choices live in the `preferred-stack` skill.
+For new code and greenfield projects when the project has no convention. Technology choices live in the `x-preferred-stack` skill.
 
 General:
 

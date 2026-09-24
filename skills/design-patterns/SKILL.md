@@ -1,5 +1,5 @@
 ---
-name: design-patterns
+name: x-design-patterns
 description: Find and apply the right design pattern (refactoring.guru catalog, GoF creational/structural/behavioral) for a concrete coding situation, or reject one when a plain TypeScript feature suffices. Use when structuring new code, refactoring conditionals, duplication, or coupling, reviewing an abstraction, or when the user names a pattern (strategy, observer, factory, adapter, decorator, state, command, builder, proxy, visitor, etc.) or asks "which pattern", "how should I structure this", "is this over-engineered".
 ---
 

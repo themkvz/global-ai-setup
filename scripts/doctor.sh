@@ -109,9 +109,9 @@ for skill in "$AI_HOME"/skills/*; do
 
   ok "$name"
 
-  check_link "$HOME/.claude/skills/$name" "$skill"
-  check_link "$HOME/.agents/skills/$name" "$skill"
-  check_link "$HOME/.agent/skills/$name" "$skill"
+  check_link "$HOME/.claude/skills/x-$name" "$skill"
+  check_link "$HOME/.agents/skills/x-$name" "$skill"
+  check_link "$HOME/.agent/skills/x-$name" "$skill"
 done
 
 section "Shared agents"
