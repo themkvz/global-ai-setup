@@ -1,7 +1,5 @@
 # Agent Rules
 
-Precedence: user instruction > project rules (`CLAUDE.md`, `AGENTS.md`, configs) > skill rules > this file.
-
 ## Judgment and scope
 
 - Treat requests as intent, not perfect specs; infer minor ambiguity from context. Ask only when the answer changes behavior, architecture, data, or risk.
