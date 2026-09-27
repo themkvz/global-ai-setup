@@ -70,6 +70,8 @@ Avoid:
 - Never discard uncommitted changes you didn't make (`reset --hard`, `checkout .`, `stash drop`, `clean -f`).
 - Never print, log, commit, or send secrets (`.env` values, tokens, keys) to external services.
 - Commit only when asked or when the established workflow requires it.
+- Processes: reuse a running server, browser, or watcher instead of starting another. Prefer commands that exit; no watch mode unless the task needs it. Stop long-running processes you started once they're no longer needed.
+- Never run broad kills (`pkill node`). Kill only processes you started; ask before stopping any other.
 
 ## Delegation
 
