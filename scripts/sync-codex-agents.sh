@@ -34,9 +34,10 @@ sync_agent() {
 
   # Codex-specific model/effort, set via the x-model-router skill scoped to
   # Codex's own catalog. Absent means: inherit Codex's default model/effort.
-  local codex_model codex_effort
+  local codex_model codex_effort codex_sandbox
   codex_model="$(frontmatter_value "codex-model" "$source")"
   codex_effort="$(frontmatter_value "codex-effort" "$source")"
+  codex_sandbox="$(frontmatter_value "codex-sandbox" "$source")"
 
   # Strip YAML frontmatter from shared Markdown agent.
   body="$(
@@ -65,7 +66,7 @@ sync_agent() {
     echo "description = \"$description\""
     [[ -n "$codex_model" ]] && echo "model = \"$codex_model\""
     [[ -n "$codex_effort" ]] && echo "model_reasoning_effort = \"$codex_effort\""
-    echo "sandbox_mode = \"read-only\""
+    echo "sandbox_mode = \"${codex_sandbox:-read-only}\""
     echo
     echo "developer_instructions = \"\"\""
     echo "$body"
@@ -86,5 +87,13 @@ sync_agent \
 sync_agent \
   "security-reviewer" \
   "Reviews security-sensitive changes for concrete exploitable vulnerabilities and trust-boundary problems."
+
+sync_agent \
+  "builder" \
+  "Implements an approved feature spec exactly as written, then stops."
+
+sync_agent \
+  "verifier" \
+  "Verifies an implemented feature by running it first, then adding edge-case tests. Reports problems; never changes implementation code."
 
 echo "Codex agents synced."

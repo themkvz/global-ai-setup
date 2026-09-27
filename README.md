@@ -258,6 +258,14 @@ Validates changed UI behavior in browser, preferably using Playwright CLI.
 
 Reviews changed attack surface for concrete security vulnerabilities and trust-boundary problems.
 
+### Builder
+
+Implements an approved spec at low effort, then stops.
+
+### Verifier
+
+Runs the feature, adds edge-case tests at high effort, reports problems without changing code.
+
 Claude and Antigravity consume shared Markdown agent definitions directly.
 
 Codex requires TOML definitions, generated with:

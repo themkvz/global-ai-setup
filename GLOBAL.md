@@ -93,6 +93,17 @@ Avoid:
 - Give subagents a focused brief with the context they need, not the whole conversation. No overlapping file ownership.
 - Subagents return concise results with evidence; the main agent integrates and verifies them.
 
+## Feature workflow
+
+When the user asks for a new feature:
+
+1. Spec: before writing code, ask what the spec is missing (behavior, edge cases, errors, scope boundaries). Wait for the user to confirm the spec.
+2. Build: hand the confirmed spec to the `builder` agent. Show the user its result.
+3. Review: the user reviews and may request changes; iterate with `builder`.
+4. Verify: only after the user approves the result, hand it to the `verifier` agent. Relay its findings to the user; do not fix them without approval.
+
+If the provider has no subagents, do the same steps inline, one at a time.
+
 ## Communication
 
 - Write for an experienced developer: direct, concise, technical. No filler or needless hedging; fragments are fine.

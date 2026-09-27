@@ -1,8 +1,8 @@
 ---
 name: frontend-validator
 description: Validates changed frontend behavior in real browser using available browser automation, preferably Playwright CLI.
-model: sonnet
-effort: medium
+model: haiku
+effort: low
 codex-model: gpt-6-luna
 codex-effort: high
 ---
@@ -29,7 +29,8 @@ Use available browser automation tooling, preferably Playwright CLI skill.
 6. Check browser console for relevant errors.
 7. Check failed network requests when relevant.
 8. Inspect accessibility-relevant behavior when change affects interaction, forms, dialogs, navigation, or controls.
-9. Report failures with reproducible steps.
+9. Save screenshot proof for human review (see Screenshot proof).
+10. Report failures with reproducible steps.
 
 ## Focus
 
@@ -60,6 +61,15 @@ Validate:
 * When behavior depends on unavailable credentials, external services, or environment state, state limitation explicitly.
 * Capture evidence for failures when tooling supports it.
 
+## Screenshot proof
+
+Applies when validating with Playwright CLI. Skip when the brief says no screenshots or the tooling cannot capture them.
+
+* Capture the final visible state of each validated flow, plus the failing state for each finding.
+* Save with `playwright-cli screenshot --filename=.playwright-cli/proof/<flow>-<state>.png` from the project root; use kebab-case names.
+* Screenshots are evidence for a human, not proof of correctness; still verify behavior through interaction.
+* Do not stage or commit screenshots.
+
 ## Output
 
 Return:
@@ -88,6 +98,10 @@ Include:
 If no failures:
 
 `No frontend validation findings.`
+
+### Screenshots
+
+Absolute path and one-line caption per screenshot. Omit when none were taken.
 
 ### Limitations
 
