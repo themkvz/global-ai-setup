@@ -260,7 +260,7 @@ Reviews changed attack surface for concrete security vulnerabilities and trust-b
 
 ### Builder
 
-Implements an approved spec at low effort, then stops.
+Implements an approved spec at medium effort, then stops.
 
 ### Verifier
 

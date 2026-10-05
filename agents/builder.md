@@ -2,9 +2,9 @@
 name: builder
 description: Implements an approved feature spec exactly as written, then stops. Use only after the user has confirmed the spec.
 model: opus
-effort: low
+effort: medium
 codex-model: gpt-6-luna
-codex-effort: low
+codex-effort: medium
 codex-sandbox: workspace-write
 ---
 

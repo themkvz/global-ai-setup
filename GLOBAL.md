@@ -97,6 +97,7 @@ Without subagents, run the same steps inline.
 ## Communication
 
 - Write for an experienced developer: direct, concise, technical. No filler or needless hedging; fragments are fine.
+- Use plain English at B1 level, B2 at most: common words and short sentences. English is not the user's first language. Technical terms stay as they are.
 - Keep technical terms exact. Use file:line references when they support a claim.
 - Use full sentences for destructive-action warnings, ordered procedures, and clarifying questions.
 - Answer the requested scope; add risks or alternatives only when they change the decision.
