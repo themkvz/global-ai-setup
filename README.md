@@ -9,8 +9,6 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 * shared global agent instructions
 * shared reusable skills
 * shared specialized agents
-* automatic project verification
-* provider-specific verification hooks
 * centralized bootstrap
 * configuration health checks
 * token-efficient tooling
@@ -39,11 +37,6 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   └── wait-what/
 │
 └── scripts/
-    ├── verify-project.sh
-    ├── claude-verify.sh
-    ├── codex-verify.sh
-    ├── antigravity-verify.sh
-    ├── copilot-verify.sh
     ├── sync-codex-agents.sh
     └── doctor.sh
 ```
@@ -274,46 +267,6 @@ Codex requires TOML definitions, generated with:
 ~/.ai/scripts/sync-codex-agents.sh
 ```
 
-## Verification
-
-Shared verifier:
-
-```text
-~/.ai/scripts/verify-project.sh
-```
-
-Provider hooks call this script when coding work completes.
-
-```text
-Claude ────────┐
-Codex ─────────┤
-Antigravity ───┼─→ verify-project.sh
-Copilot ───────┘
-```
-
-Current checks include:
-
-```text
-git diff --check
-package-manager detection
-project-defined typecheck
-optional full test suite
-```
-
-Run manually:
-
-```bash
-~/.ai/scripts/verify-project.sh
-```
-
-Run with full tests:
-
-```bash
-VERIFY_FULL_TESTS=1 ~/.ai/scripts/verify-project.sh
-```
-
-Verification is intentionally non-mutating. It reports problems rather than silently fixing them.
-
 ## Safety
 
 Safety-critical behavior should not depend only on prompt instructions.
@@ -456,8 +409,6 @@ Use skills for specialized knowledge.
 
 Keep project context inside project.
 
-Prefer deterministic hooks over hoping model follows validation instructions.
-
 Prefer existing provider capabilities over duplicate tooling.
 
 Keep one canonical source whenever possible.
@@ -478,8 +429,6 @@ Avoid storing credentials, tokens, or machine-specific secrets in this repositor
               provider adapters
                       │
           Claude / Codex / Antigravity
-                      │
-                 verification
 ```
 
 This repository provides one maintainable configuration layer for multiple coding agents while keeping permanent context small and specialized behavior on demand.

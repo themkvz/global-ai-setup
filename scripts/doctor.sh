@@ -78,8 +78,7 @@ section "Shared configuration"
 
 for file in \
   "$AI_HOME/GLOBAL.md" \
-  "$AI_HOME/bootstrap.sh" \
-  "$AI_HOME/scripts/verify-project.sh"
+  "$AI_HOME/bootstrap.sh"
 do
   if [[ -f "$file" ]]; then
     ok "$file"
