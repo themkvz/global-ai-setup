@@ -78,7 +78,7 @@ Delegate independent, non-trivial subtasks; keep simple ones in the main agent. 
 | Work                                                | GPT  | Claude | Effort |
 | --------------------------------------------------- | ---- | ------ | ------ |
 | Focused search, summary, mechanical edit            | luna | haiku  | low    |
-| Routine implementation, bounded bug fix             | luna | opus   | medium |
+| Routine implementation, bounded bug fix             | luna | haiku  | medium |
 | Hard debugging, design, correctness review          | sol  | opus   | high   |
 | A lower tier failed twice, or an unresolved blocker | sol  | opus   | max    |
 

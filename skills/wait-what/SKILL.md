@@ -1,44 +1,45 @@
 ---
 name: x-wait-what
-description: "Stop. The last message did not land: explain it again like I am five, with tiny words and an everyday picture, then map it back to the real terms."
+description: "Stop. The last message did not land: explain it again in plain, simple words, step by step, keeping the real technical terms."
 argument-hint: "[the part that confused you]"
 disable-model-invocation: true
 ---
 
 # Wait, what?
 
-The last message did not land. Explain the same content again as if to a five-year-old. Do not add new work, new findings, or new options: the goal is understanding, not progress.
+The last message did not land. Explain the same content again in plain, simple words for an experienced developer whose first language is not English. Do not add new work, new findings, or new options: the goal is understanding, not progress.
 
 If the user named the confusing part, explain only that part. Otherwise explain the main point of the last message.
 
 ## Format
 
-1. **The big idea.** One sentence a child would get.
-2. **Picture it.** One everyday comparison: toys, a kitchen, the mail, a library, a queue at a shop. Pick one that matches how the thing actually works, and keep it for the whole answer. Switching pictures mid-way confuses more than it helps.
-3. **Step by step.** What happens, or what I said, in 3–5 numbered steps, told inside the picture.
-4. **Grown-up words.** A short list mapping each part of the picture to the real thing: `mailbox → the Valkey session store`. Keep `path:line` references and exact names here, so the user can act on it. If the picture is wrong in a way that matters, say where it breaks in one line.
-5. **What now.** The one thing I will do next, or the one decision needed, as a yes/no or a pick-one question.
+1. **In short.** One or two plain sentences: what it is and why it matters.
+2. **How it works.** 3–6 numbered steps in the real order of events. Say who does what.
+3. **Why.** The problem this solves, or what breaks without it. One or two sentences.
+4. **What now.** The one thing I will do next, or the one decision needed, as a yes/no or a pick-one question.
+
+Add a comparison to something familiar only if it really helps. Keep it to one line, and it must match how the thing actually works.
 
 ## Language
 
-- Short sentences, about 12 words or fewer. One idea each.
-- Everyday words. No jargon, acronyms, or code in sections 1–3; they belong in section 4.
-- If a technical word cannot be avoided, explain it right away: "a token, which is like a ticket".
-- Say who does what: "the server checks your ticket", not "the ticket is validated".
-- Simple is not cute. No baby talk, no "great question", no apologies, no comments about the rewrite.
+- Plain English at B1 level: common words, short sentences, one idea each.
+- Keep technical terms, names, and `path:line` references exact. Do not replace them with vague words.
+- Explain a term the first time only if the last message used it without explaining it: "the token family (all tokens made from the same login)".
+- Active voice: "the server checks the token", not "the token is validated".
+- No baby talk, no "great question", no apologies, no comments about the rewrite.
 - Simple must still be true. Leave details out, but never say something false to make it easier.
 
 ## Example
 
 Last message: "The BFF stores the refresh token server-side and single-flights refresh per session to avoid reuse detection revoking the family."
 
-1. **The big idea.** Only one helper may swap the old ticket for a new one.
-2. **Picture it.** Your ticket to the fair works once at the swap booth. Show it twice and the booth thinks it was stolen.
-3. **Step by step.**
-   1. Your ticket gets old.
-   2. A helper takes it to the booth and gets a new one.
-   3. If two helpers go at the same time, the booth sees the same ticket twice.
-   4. The booth thinks someone stole it, so it cancels all your tickets.
-   5. So one helper goes, and the others wait for them.
-4. **Grown-up words.** ticket → refresh token · booth → `/auth/refresh` · cancelling all tickets → revoking the token family · one helper at a time → single-flight refresh per session.
-5. **What now.** Should I add the one-helper-at-a-time rule to the refresh code?
+1. **In short.** Only one request per session may refresh the token at a time. Otherwise the API logs the user out.
+2. **How it works.**
+   1. The access token expires.
+   2. The BFF sends the refresh token to `/auth/refresh` and gets a new pair.
+   3. Each refresh token works only once.
+   4. If two requests refresh at the same time, the API sees the same refresh token twice.
+   5. The API treats this as theft and revokes the token family (all tokens from that login).
+   6. With single-flight, the first request refreshes and the others wait and reuse its result.
+3. **Why.** Without it, a page that fires parallel requests can log the user out at random.
+4. **What now.** Should I add single-flight refresh to the refresh code?
