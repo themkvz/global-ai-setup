@@ -32,6 +32,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   ├── create-issue/
 │   ├── design-patterns/
 │   ├── find-docs/
+│   ├── issue-comment/
 │   ├── playwright-cli/
 │   ├── preferred-stack/
 │   └── wait-what/
@@ -199,6 +200,17 @@ Use when adding an API call to a loader, action, or resource route, adding an en
 User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI.
 
 It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured trackers. If no publishing tool is available, it returns a title and body ready to paste.
+
+### `x-issue-comment`
+
+User-invoked only. Posts one short, professional comment on a tracker issue about the work done in the current conversation and branch.
+
+```text
+/x-issue-comment        short status update
+/x-issue-comment qa     what changed + how to test + regression risk
+```
+
+Describes behavior, not code. Uses the same tracker and tool detection as `x-create-issue`; prints the comment ready to paste if no tool is available.
 
 ### `x-design-patterns`
 
