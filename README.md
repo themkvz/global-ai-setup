@@ -236,6 +236,16 @@ Provides browser automation for frontend validation:
 * screenshots
 * user flows
 
+The body and `references/` are a copy of the skill bundled with `@playwright/cli`; only the frontmatter and the `Local rules` section are ours. To sync after a CLI update:
+
+```bash
+bun add -g @playwright/cli@latest
+src=~/.bun/install/global/node_modules/@playwright/cli/skills/playwright-cli
+diff -r "$src" ~/.ai/skills/playwright-cli   # review, then copy the changed upstream files
+```
+
+Keep `name: x-playwright-cli`, the local description and `allowed-tools`, and the `Local rules` section.
+
 ### `x-ship-check`
 
 User-invoked only. Final pre-launch verification for any product type: website, web app, internal tool, backend/API, worker, CLI, or mobile app. Detects the product type, runs the project's own checks, walks the matching checklists, and reports findings with evidence and a ship verdict. Changes nothing.

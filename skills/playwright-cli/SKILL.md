@@ -1,10 +1,21 @@
 ---
 name: x-playwright-cli
-description: Automate browser interactions, test web pages and work with Playwright tests.
-allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*)
+description: Drive a real browser with `playwright-cli` to check a UI change on localhost, preview, or staging; walk user flows and forms; take screenshots; read console errors and network requests; and run, debug, or generate Playwright tests. Use whenever a task needs to see or verify what a page actually does, even if the user does not say "Playwright".
+allowed-tools: Bash(playwright-cli:*) Bash(npx playwright:*)
 ---
 
 # Browser Automation with playwright-cli
+
+## Local rules
+
+Everything below this section is the upstream skill from `@playwright/cli`; keep it unchanged so it can be re-synced. These rules come from real sessions and win over it.
+
+- Open a browser only when the task needs one. If the user says to skip the browser, skip it.
+- Run `playwright-cli list` first and reuse an open session; do not `open` again for each step. Close the sessions you opened when the task is done.
+- Write `playwright-cli` in full in every command. Do not put it in a shell variable (`P=playwright-cli; $P open`): zsh does not word-split it, so the call fails with `command not found`.
+- A ref that times out is usually stale. Run `snapshot` or `find` again for fresh refs before retrying; do not retry the same ref.
+- Capture only what is needed (`screenshot e5`, `--filename=...`). Do not post-process images with Python or other tools.
+- Install or update with Bun: `bun add -g @playwright/cli@latest` (not `npm install -g`).
 
 ## Quick start
 
