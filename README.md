@@ -249,7 +249,7 @@ Report sections: Performance, Security, Best practices, UX, Maintainability, plu
 
 ### `x-wait-what`
 
-User-invoked only. Re-explains the last message like you are five: the big idea, one everyday picture, 3–5 steps told inside it, then a map from the picture back to the real terms and `path:line` references, and the next action. Pass the confusing part to narrow it.
+User-invoked only. Re-explains the last message as a smart caveman: short line, 3–6 steps, why, next action. Keeps real terms and `path:line` references. Runs on Haiku at low effort to save tokens. Pass the confusing part to narrow it.
 
 ```text
 /x-wait-what
