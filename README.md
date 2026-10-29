@@ -35,6 +35,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   ├── issue-comment/
 │   ├── playwright-cli/
 │   ├── preferred-stack/
+│   ├── ship-check/
 │   └── wait-what/
 │
 └── scripts/
@@ -234,6 +235,17 @@ Provides browser automation for frontend validation:
 * network failures
 * screenshots
 * user flows
+
+### `x-ship-check`
+
+User-invoked only. Final pre-launch verification for any product type: website, web app, internal tool, backend/API, worker, CLI, or mobile app. Detects the product type, runs the project's own checks, walks the matching checklists, and reports findings with evidence and a ship verdict. Changes nothing.
+
+```text
+/x-ship-check
+/x-ship-check api https://staging.example.com
+```
+
+Report sections: Performance, Security, Best practices, UX, Maintainability, plus "Needs confirmation" for what the repo cannot prove (DNS, backups, store settings). Checklists live in `references/` (core, web, backend, mobile) and load by product type.
 
 ### `x-wait-what`
 
