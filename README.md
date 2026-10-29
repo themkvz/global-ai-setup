@@ -27,6 +27,7 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   └── security-reviewer.md
 │
 ├── skills/
+│   ├── ask-skill/
 │   ├── bff-api-architecture-flow/
 │   ├── bff-api-client/
 │   ├── create-issue/
@@ -263,6 +264,14 @@ User-invoked only. Re-explains the last message as a smart caveman: short line, 
 
 ```text
 /x-wait-what
+```
+
+### `x-ask-skill`
+
+User-invoked only. Reads the current session and recommends the best-fitting skill: shared `~/.ai` skills first (including manual-only ones the agent cannot see), other installed skills only when they fit better. Returns the pick, the exact command with arguments filled from context, at most one alternative, or "no skill needed". Never runs the pick without a yes. Pass a short problem to steer it.
+
+```text
+/x-ask-skill
 ```
 
 ## Agents
