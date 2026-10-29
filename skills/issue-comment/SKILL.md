@@ -20,11 +20,11 @@ Readers are product managers, leads, other developers, and QA. Most of them read
 
 1. **Scope.** Arguments win over inference. They may contain `qa`, an issue key or URL, and a focus (for example, "only the export fix").
 2. **Issue.** Find the issue in this order: the arguments, the conversation, an issue key in the branch name (`ENG-123`, `PROJ-45`, `AB#123`, `123-fix-login`), recent commit messages. If none is found or the signals conflict, ask.
-3. **Tracker and tool.** Infer the tracker from the issue key format, the user's words, project instructions (`CLAUDE.md`, `AGENTS.md`), then the git remote host. Prefer a connected MCP tool; otherwise an installed, authenticated CLI (`acli`/`jira`, `az boards`, `gh issue comment`, `glab issue note`). Check a CLI's `--help` before the first call.
+3. **Tracker and tool.** Infer the tracker from, in order: the user's words, project instructions (`CLAUDE.md`, `AGENTS.md`), the issue key format, then the git remote host. An issue key beats the remote host: many GitHub repos track work in Linear or Jira. Prefer a connected MCP tool; otherwise an installed, authenticated CLI (a Linear CLI, `acli`/`jira`, `az boards`, `gh issue comment`, `glab issue note`). Check a CLI's `--help` before the first call. Only add a comment: do not change the issue's status, assignee, or labels.
 4. **Read the issue.** Fetch its title, description, and acceptance criteria, and skim recent comments. The comment answers this issue: refer to its acceptance criteria, use its terms, and do not repeat what earlier comments already say. Write in the language the issue uses.
-5. **Gather the facts.** Start from the conversation. Then fill gaps from the branch: `git log <base>..HEAD --oneline`, `git diff <base>...HEAD --stat`, and the full diff only where the behavior change is unclear. Find the base from the PR, or `main`/`master`. Get the PR link if one exists (`gh pr view --json url`, `glab mr view`). For QA, look at what else uses the changed code: that is where regressions hide.
+5. **Gather the facts.** Start from the conversation. Then fill gaps from the branch: `git log <base>..HEAD --oneline`, `git diff <base>...HEAD --stat`, and the full diff only where the behavior change is unclear. Find the base from the PR, or `main`/`master`. Get the PR link if one exists (`gh pr view --json url`, `glab mr view`). For QA, look at what else uses the changed code: that is where regressions hide. If the work is uncommitted or not pushed, readers cannot see it yet: say so in the comment.
 6. **Write** the comment in the variant's format below, in the tracker's native format (Jira may need wiki markup or ADF depending on the tool; Azure DevOps comments are HTML). With a CLI, pass the body through a file or heredoc so newlines and backticks survive.
-7. **Post and report.** Return the comment URL, or the issue URL if the tool gives none, in one line. If no suitable authenticated tool exists, name the MCP or CLI needed and print the comment ready to paste.
+7. **Post and report.** In one line, return the issue key and title and the comment URL (or the issue URL if the tool gives none), so a wrongly guessed issue is easy to spot. If no suitable authenticated tool exists, name the MCP or CLI needed and print the comment ready to paste.
 
 ## Writing rules (both variants)
 
@@ -32,7 +32,7 @@ Readers are product managers, leads, other developers, and QA. Most of them read
 - Leave out: file names, function and class names, libraries, refactors, how the bug was found, the debugging story, and test counts. Mention a technical detail only when the reader must act on it: a migration, a new env variable or feature flag, a config change, a breaking API change.
 - Short sentences, plain words, no filler ("I have successfully implemented..."), no hedging, no emojis.
 - State the real status. If something is partial, blocked, or a known limitation, say so in one line. Never claim tested or verified unless it was.
-- Never include secrets, tokens, `.env` values, personal data, customer names, or internal hostnames.
+- Never include secrets, tokens, `.env` values, personal data, customer names, or internal hostnames (the PR and issue links are fine).
 
 ## Short format
 
@@ -46,7 +46,7 @@ Aim for 1–4 lines. One sentence is fine when it says everything.
 PR: <link>
 ```
 
-Status words: `Done`, `Fixed`, `Partly done`, `Blocked`, `In review`. Drop the bullet list when there is nothing crucial. Drop the PR line when there is no PR.
+Status words: `Done`, `Fixed`, `In review`, `In progress`, `Partly done`, `Blocked`. `Done` and `Fixed` mean merged or deployed; with an open PR, use `In review`. Drop the bullet list when there is nothing crucial. Drop the PR line when there is no PR.
 
 **Example:**
 
@@ -60,47 +60,44 @@ PR: https://github.com/acme/shop/pull/881
 
 ## QA format
 
-Still concise: a tester should finish reading in under a minute. Every step must be something a tester can do in the UI or API without reading the code.
+Smart caveman style. Fragments, no articles, no filler, no full sentences. Keep every fact a tester needs: role, data, exact button, exact result. One line per step: `action → expected`. A tester reads it in 20 seconds and can do every step in the UI or API without reading code.
 
 ```markdown
-**What changed**
-- <Behavior change, from the user's point of view.>
+**Changed**
+- <behavior change, user view>
 
-**How to test**
-1. <Precondition or setup, if any.>
-2. <Action.>
-   Expected: <observable result>
+**Test**
+1. <setup, if any>
+2. <action> → <expected>
 
-**Also check** (regression risk)
-- <Feature or screen that shares the changed logic, and what to look for.>
+**Also check**
+- <feature sharing changed logic> → <what to look for>
 
 **Notes**
-- <Only if needed: environment or build, feature flag, test data, user role, migration, known limitation, what is out of scope.>
+- <only if needed: env/build, flag, role, test data, migration, limit, out of scope>
 
 PR: <link>
 ```
 
-Cover edge cases the change targets (empty, error, permission, limit cases) as steps or expected results, not as a separate essay. Derive "Also check" from the code that changed and its callers, then name the user-facing features, not the code. Drop `Notes` when empty.
+Edge cases the change targets (empty, error, permission, limit) go in as steps, not prose. Derive `Also check` from changed code and its callers, but name features, not code. Drop `Notes` when empty.
 
 **Example:**
 
 ```markdown
-**What changed**
-- CSV export now includes archived orders.
-- The export uses the date range selected in the filter instead of the last 30 days.
+**Changed**
+- CSV export includes archived orders.
+- Export uses filter date range, not last 30 days.
 
-**How to test**
-1. Open Orders as an admin and set the date range to last quarter.
-2. Archive one order in that range, then click Export CSV.
-   Expected: the file contains only orders from last quarter, including the archived one.
-3. Export with a range that has no orders.
-   Expected: the file has only the header row; no error.
+**Test**
+1. Orders as admin, range = last quarter.
+2. Archive one order in range, Export CSV → only last-quarter orders, archived one included.
+3. Export empty range → header row only, no error.
 
-**Also check** (regression risk)
-- Invoices export: it shares the same export logic. Check that the date range is applied there too.
+**Also check**
+- Invoices export (same logic) → date range applied.
 
 **Notes**
-- Test on staging, build 2.14.0 or later.
+- Staging, build 2.14.0+.
 
 PR: https://github.com/acme/shop/pull/881
 ```

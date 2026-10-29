@@ -208,7 +208,7 @@ User-invoked only. Posts one short, professional comment on a tracker issue abou
 
 ```text
 /x-issue-comment        short status update
-/x-issue-comment qa     what changed + how to test + regression risk
+/x-issue-comment qa     caveman-terse QA handoff: changed, test steps, regression risk
 ```
 
 Describes behavior, not code. Uses the same tracker and tool detection as `x-create-issue`; prints the comment ready to paste if no tool is available.
