@@ -22,15 +22,15 @@ frontmatter_value() {
 }
 
 sync_agent() {
-  local name="$1"
-  local description="$2"
-  local source="$SRC/$name.md"
-  local target="$DST/$name.toml"
+  local source="$1"
+  local name target description
+  name="$(basename "$source" .md)"
+  target="$DST/$name.toml"
 
-  if [[ ! -f "$source" ]]; then
-    echo "Missing: $source" >&2
-    return 1
-  fi
+  # Escape for a TOML basic string.
+  description="$(frontmatter_value "description" "$source")"
+  description="${description//\\/\\\\}"
+  description="${description//\"/\\\"}"
 
   # Codex-specific model/effort, set via the x-model-router skill scoped to
   # Codex's own catalog. Absent means: inherit Codex's default model/effort.
@@ -68,32 +68,17 @@ sync_agent() {
     [[ -n "$codex_effort" ]] && echo "model_reasoning_effort = \"$codex_effort\""
     echo "sandbox_mode = \"${codex_sandbox:-read-only}\""
     echo
-    echo "developer_instructions = \"\"\""
+    # Literal string: backslashes in the body stay as written.
+    echo "developer_instructions = '''"
     echo "$body"
-    echo "\"\"\""
+    echo "'''"
   } > "$target"
 
   echo "Synced: $target"
 }
 
-sync_agent \
-  "debugger" \
-  "Investigates bugs, errors, failing tests, and unexpected behavior. Finds root cause before recommending the smallest fix."
-
-sync_agent \
-  "frontend-validator" \
-  "Validates changed frontend behavior in a real browser using available browser automation."
-
-sync_agent \
-  "security-reviewer" \
-  "Reviews security-sensitive changes for concrete exploitable vulnerabilities and trust-boundary problems."
-
-sync_agent \
-  "builder" \
-  "Implements an approved feature spec exactly as written, then stops."
-
-sync_agent \
-  "verifier" \
-  "Verifies an implemented feature by running it first, then adding edge-case tests. Reports problems; never changes implementation code."
+for source in "$SRC"/*.md; do
+  sync_agent "$source"
+done
 
 echo "Codex agents synced."

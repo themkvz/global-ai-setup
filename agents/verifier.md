@@ -3,7 +3,7 @@ name: verifier
 description: Verifies an implemented feature by running it first, then adding edge-case tests. Reports problems; never changes implementation code.
 model: opus
 effort: high
-codex-model: gpt-6-sol
+codex-model: gpt-6.1-sol
 codex-effort: high
 codex-sandbox: workspace-write
 ---

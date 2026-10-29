@@ -287,7 +287,7 @@ Reviews changed attack surface for concrete security vulnerabilities and trust-b
 
 ### Builder
 
-Implements an approved spec at medium effort, then stops.
+Implements a decided change (approved spec, known-cause fix, mechanical multi-file edit) on Haiku at medium effort, then stops. Spawned proactively; limited to Read, Edit, Write, Bash, and Skill.
 
 ### Verifier
 
@@ -295,7 +295,7 @@ Runs the feature, adds edge-case tests at high effort, reports problems without 
 
 Claude and Antigravity consume shared Markdown agent definitions directly.
 
-Codex requires TOML definitions, generated with:
+Codex requires TOML definitions, generated from every `agents/*.md` (description and `codex-*` keys come from the frontmatter) with:
 
 ```bash
 ~/.ai/scripts/sync-codex-agents.sh

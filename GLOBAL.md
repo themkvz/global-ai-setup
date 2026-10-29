@@ -82,6 +82,8 @@ Delegate independent, non-trivial subtasks; keep simple ones in the main agent. 
 | Hard debugging, design, correctness review          | sol  | opus   | high   |
 | A lower tier failed twice, or an unresolved blocker | sol  | opus   | max    |
 
+Once what to change is decided (approved spec, known-cause fix, mechanical edit) and it spans more than a few lines or one file, hand it to the `builder` agent instead of editing inline: name the files and the exact change, not the whole conversation.
+
 Brief subagents with only the context they need; no overlapping file ownership. They return concise results with evidence; the main agent integrates and verifies them.
 
 ## Feature workflow
