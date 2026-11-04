@@ -22,9 +22,11 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 ├── bootstrap.sh
 │
 ├── agents/
+│   ├── builder.md
 │   ├── debugger.md
 │   ├── frontend-validator.md
-│   └── security-reviewer.md
+│   ├── security-reviewer.md
+│   └── verifier.md
 │
 ├── skills/
 │   ├── ask-skill/
@@ -32,8 +34,10 @@ Goal: configure common behavior once, reuse it everywhere, and keep project-spec
 │   ├── bff-api-client/
 │   ├── create-issue/
 │   ├── design-patterns/
+│   ├── design-system-board/
 │   ├── find-docs/
 │   ├── issue-comment/
+│   ├── model-router/
 │   ├── playwright-cli/
 │   ├── preferred-stack/
 │   ├── ship-check/
@@ -274,6 +278,22 @@ User-invoked only. Reads the current session and recommends the best-fitting ski
 /x-ask-skill
 ```
 
+### `x-design-system-board`
+
+User-invoked only. Generates a design system documentation board (sections DS-00 to DS-05) with dark-theme, tech-blue defaults. Pass product, theme, or brand color to override the defaults.
+
+```text
+/x-design-system-board
+```
+
+### `x-model-router`
+
+User-invoked only. Asks Jev (TypeSafe) which of the current host's available models best fits a task. Sends the task description and per-model criteria to `https://api.typesafe.ai/v1/systemone`; needs `TYPESAFE_API_KEY` in the environment.
+
+```text
+/x-model-router
+```
+
 ## Agents
 
 Canonical agents live under:
@@ -475,3 +495,7 @@ Avoid storing credentials, tokens, or machine-specific secrets in this repositor
 ```
 
 This repository provides one maintainable configuration layer for multiple coding agents while keeping permanent context small and specialized behavior on demand.
+
+## License
+
+[MIT](LICENSE)
