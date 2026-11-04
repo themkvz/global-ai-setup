@@ -65,7 +65,7 @@ Requirements:
 * Optional, for `doctor.sh`: `jq` (JSON checks), Python 3.11+ (`tomllib`, for TOML checks), and `shellcheck`.
 * Optional, used by some skills: `ctx7` (Context7 CLI), `playwright-cli`, `rtk`, and a `TYPESAFE_API_KEY` for `x-model-router`.
 
-The scripts have been run on Linux with Bash 5.2. macOS is untested. Windows isn't supported natively, because bootstrap relies on Bash and symlinks in your home folder.
+The scripts have been run on Linux with Bash 5.2 and on macOS with the system Bash 3.2. Windows isn't supported natively, because bootstrap relies on Bash and symlinks in your home folder.
 
 ## Quick start
 
@@ -158,4 +158,4 @@ Issues and pull requests are welcome. Keep changes small and in line with the de
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE), except `skills/playwright-cli/`, which is copied from `@playwright/cli` and keeps its [Apache-2.0](skills/playwright-cli/LICENSE) license.
