@@ -1,500 +1,160 @@
 # Global AI Setup
 
-Shared configuration for coding agents across Claude Code, Codex CLI, Antigravity, and Copilot.
+A unified configuration system for AI coding agents, shared skills, and development workflows.
 
-Goal: configure common behavior once, reuse it everywhere, and keep project-specific knowledge inside each project.
+Write your agent instructions, skills, and subagents once in `~/.ai`, and link them into Claude Code, Codex CLI, Antigravity (Gemini), and GitHub Copilot.
 
-## What This Setup Provides
+**Who it's for:** developers who use more than one AI coding agent and want the same baseline behavior in all of them without copying files between tool folders.
 
-* shared global agent instructions
-* shared reusable skills
-* shared specialized agents
-* centralized bootstrap
-* configuration health checks
-* token-efficient tooling
-* security boundaries outside model prompts
+## Key features
 
-## Structure
+* **One global instruction file.** `GLOBAL.md` is linked as `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, and `copilot-instructions.md`.
+* **Shared skills.** 13 skills under `skills/`, covering docs lookup, BFF authentication, design patterns, browser checks, release checks, issue tracking, and more. See [docs/skills.md](docs/skills.md).
+* **Shared subagents.** Builder, debugger, frontend validator, security reviewer, and verifier. See [docs/agents.md](docs/agents.md).
+* **Codex agent generation.** Markdown agents are converted to the TOML format Codex needs.
+* **Safe bootstrap.** A dry-run mode, plus backups of files it replaces.
+* **Health check.** `doctor.sh` checks links, skills, agents, script syntax, JSON/TOML configs, and installed CLIs.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph repo["~/.ai (this repository)"]
+    G["GLOBAL.md"]
+    S["skills/*/"]
+    A["agents/*.md"]
+  end
+
+  G -- symlink --> CL["~/.claude/CLAUDE.md"]
+  G -- symlink --> CX["~/.codex/AGENTS.md"]
+  G -- symlink --> GM["~/.gemini/GEMINI.md"]
+  G -- symlink --> CP["~/.copilot/copilot-instructions.md"]
+
+  S -- "symlink as x-*" --> SK["~/.claude/skills/<br/>~/.agents/skills/<br/>~/.agent/skills/"]
+
+  A -- symlink --> AG["~/.claude/agents/<br/>~/.gemini/config/agents/"]
+  A -- "sync-codex-agents.sh" --> CT["~/.codex/agents/*.toml"]
+```
+
+`~/.ai` is the single source of truth. Tool folders hold links to it, or files generated from it. Edit a file in `~/.ai` and every linked tool sees the change.
+
+### Notable decisions
+
+* **Links, not copies.** `bootstrap.sh` creates symlinks, so there is nothing to keep in sync, except the Codex agents, which have to be generated.
+* **Codex agents are generated.** Codex needs TOML, so `scripts/sync-codex-agents.sh` turns the description, body, and `codex-*` frontmatter keys of each `agents/*.md` into `~/.codex/agents/<name>.toml`. The sandbox defaults to `read-only` unless an agent sets `codex-sandbox`.
+* **Small global context.** `GLOBAL.md` only holds behavior useful in nearly every session: scope, evidence-first investigation, minimal changes, verification, safety, and concise communication. Framework and project knowledge lives in skills or in each project.
+* **Skills load on demand.** Most skills are user-invoked only (`disable-model-invocation: true`), so they don't use up context until you call them with `/x-<name>`.
+* **Safety lives in tool permissions, not prompts.** Rules such as "approval before push" and "no force push or `git reset --hard`" belong in each tool's permission settings. This repository doesn't manage those settings.
+* **CLIs over context-heavy MCP servers.** It uses the Context7 CLI and Playwright CLI instead of their MCP servers.
+* **Token-efficient tooling.** RTK compresses shell and tool output, and the Ponytail Claude plugin encourages smaller implementations. `doctor.sh` reports whether both are present.
+* **Project knowledge stays in the project.** Architecture, commands, and specs belong in each repository (for example via OpenSpec), not in global config.
+
+## Compatibility
+
+What `bootstrap.sh` sets up for each tool:
+
+* **Claude Code:** `~/.claude/CLAUDE.md`, `~/.claude/skills/x-*`, `~/.claude/agents/*.md`
+* **Codex CLI:** `~/.codex/AGENTS.md`, `~/.codex/agents/*.toml` (generated)
+* **Antigravity / Gemini:** `~/.gemini/GEMINI.md`, `~/.gemini/config/agents/*.md`
+* **GitHub Copilot:** `~/.copilot/copilot-instructions.md` (global instructions only)
+* **Shared skill folders:** `~/.agents/skills/x-*` and `~/.agent/skills/x-*`
+
+Requirements:
+
+* Bash, Git, and a system that supports symlinks. The scripts expect the repository at `~/.ai`.
+* Optional, for `doctor.sh`: `jq` (JSON checks), Python 3.11+ (`tomllib`, for TOML checks), and `shellcheck`.
+* Optional, used by some skills: `ctx7` (Context7 CLI), `playwright-cli`, `rtk`, and a `TYPESAFE_API_KEY` for `x-model-router`.
+
+The scripts have been run on Linux with Bash 5.2. macOS is untested. Windows isn't supported natively, because bootstrap relies on Bash and symlinks in your home folder.
+
+## Quick start
+
+```bash
+git clone https://github.com/themkvz/global-ai-setup.git ~/.ai
+```
+
+Preview what bootstrap would change (nothing is written):
+
+```bash
+DRY_RUN=1 ~/.ai/bootstrap.sh
+```
+
+Apply:
+
+```bash
+~/.ai/bootstrap.sh
+```
+
+Check the result:
+
+```bash
+~/.ai/scripts/doctor.sh
+```
+
+A healthy setup ends with `Failures: 0`. A warning usually means an optional CLI isn't installed.
+
+What bootstrap does with files that already exist:
+
+* **An existing `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `copilot-instructions.md`, or agent file** is moved to `<file>.backup` (or `<file>.backup.<timestamp>` if a backup exists) before the link is created.
+* **An existing skill folder that is not a symlink** is left alone and reported as `Skip existing non-symlink`.
+* **Existing symlinks** are replaced.
+
+Bootstrap doesn't touch tool permissions, credentials, authentication, or other local-only settings.
+
+## Usage
+
+* Global instructions: edit `~/.ai/GLOBAL.md`.
+* Skills: run a user-invoked skill with `/x-<name>`, for example `/x-ship-check` or `/x-wait-what`. Full list: [docs/skills.md](docs/skills.md).
+* Agents: after changing `agents/*.md`, regenerate the Codex copies:
+
+  ```bash
+  ~/.ai/scripts/sync-codex-agents.sh
+  ```
+
+## Repository layout
 
 ```text
 ~/.ai/
-├── GLOBAL.md
-├── bootstrap.sh
-│
-├── agents/
-│   ├── builder.md
-│   ├── debugger.md
-│   ├── frontend-validator.md
-│   ├── security-reviewer.md
-│   └── verifier.md
-│
-├── skills/
-│   ├── ask-skill/
-│   ├── bff-api-architecture-flow/
-│   ├── bff-api-client/
-│   ├── create-issue/
-│   ├── design-patterns/
-│   ├── design-system-board/
-│   ├── find-docs/
-│   ├── issue-comment/
-│   ├── model-router/
-│   ├── playwright-cli/
-│   ├── preferred-stack/
-│   ├── ship-check/
-│   └── wait-what/
-│
-└── scripts/
-    ├── sync-codex-agents.sh
-    └── doctor.sh
+├── GLOBAL.md                     global instructions for every tool
+├── bootstrap.sh                  creates links and generated config
+├── agents/                       shared subagents (Markdown + frontmatter)
+├── skills/<name>/SKILL.md        shared skills, some with references/
+├── scripts/
+│   ├── doctor.sh                 health check
+│   └── sync-codex-agents.sh      agents/*.md → ~/.codex/agents/*.toml
+└── docs/                         skill and agent reference
 ```
 
-`~/.ai` is source of truth. Provider directories reference or receive generated configuration from it.
+## Testing
 
-## Quick Start
-
-Clone repository as:
+There is no automated test suite or CI. Before committing, run:
 
 ```bash
-git clone <repo-url> ~/.ai
+bash -n ~/.ai/bootstrap.sh ~/.ai/scripts/*.sh
 ```
-
-Make bootstrap executable:
 
 ```bash
-chmod +x ~/.ai/bootstrap.sh
+shellcheck ~/.ai/bootstrap.sh ~/.ai/scripts/*.sh
 ```
-
-Preview changes:
 
 ```bash
 DRY_RUN=1 ~/.ai/bootstrap.sh
 ```
 
-Apply:
-
-```bash
-~/.ai/bootstrap.sh
-```
-
-Verify setup:
-
 ```bash
 ~/.ai/scripts/doctor.sh
 ```
 
-Healthy result:
+`doctor.sh` writes no files. It reads your config and runs `--version`, `claude plugin list`, `rtk init --show`, and `rtk gain` for the CLIs that are installed.
 
-```text
-==> Summary
-Failures: 0
-Warnings: 0
-```
+## Contributing
 
-## Global Context
+Issues and pull requests are welcome. Keep changes small and in line with the decisions above:
 
-Canonical global instructions:
-
-```text
-~/.ai/GLOBAL.md
-```
-
-Provider files link to it:
-
-```text
-~/.claude/CLAUDE.md
-~/.codex/AGENTS.md
-~/.gemini/GEMINI.md
-~/.copilot/copilot-instructions.md
-        ↓
-~/.ai/GLOBAL.md
-```
-
-`GLOBAL.md` contains only behavior useful across nearly every coding session:
-
-* scope and judgment
-* evidence-first investigation
-* minimal implementation
-* verification requirements
-* safety
-* concise technical communication
-
-It intentionally excludes framework details, package preferences, project architecture, and provider-specific workflows.
-
-## Skills
-
-Reusable specialized instructions live under:
-
-```text
-~/.ai/skills/
-```
-
-### `x-preferred-stack`
-
-Provides preferred defaults when project does not already establish another choice.
-
-Examples:
-
-* TypeScript
-* Bun
-* Biome
-* React
-* React Router
-* Tailwind CSS
-* shadcn/ui
-* Zustand
-* TanStack Query
-* Hono / Elysia
-* Drizzle ORM
-* PostgreSQL / MySQL / SQLite
-
-Priority:
-
-```text
-existing project
-→ project instructions/spec
-→ x-preferred-stack
-→ ecosystem defaults
-```
-
-Existing project architecture always wins.
-
-### `x-find-docs`
-
-Uses Context7 CLI for current framework/library/API documentation.
-
-Use when implementation depends on version-specific behavior, configuration, migrations, setup, or library-specific debugging.
-
-```bash
-ctx7 library <name> "<query>"
-ctx7 docs <library-id> "<query>"
-```
-
-### `x-bff-api-architecture-flow`
-
-Chooses authentication architecture for React Router v7+ Framework Mode BFFs, external REST/Spring Boot/Elysia APIs, Valkey-backed web sessions, PostgreSQL-backed refresh tokens, and Expo mobile clients.
-
-Covers three modes:
-
-```text
-external API, one token
-API with access + refresh tokens
-own full-stack monorepo
-```
-
-Constant across all three: API tokens stay server-side, the browser holds only an opaque session ID, `401` ends the session and `403` does not.
-
-Use when implementing login, registration, session handling, access/refresh tokens, retry behavior, logout, token storage, or authorization boundaries.
-
-### `x-bff-api-client`
-
-Wires the server-side API client inside a React Router v7+ Framework Mode BFF.
-
-```text
-createApiClient()   per-request factory
-apiClientContext    React Router context
-requireSession      middleware builds client, sets context
-<domain>.server.ts  one thin fn per endpoint
-route loader        reads client from context
-```
-
-The route never builds a client and never sees a token, so auth headers, `401` handling, correlation IDs, timeouts, and logging stay in one file.
-
-Use when adding an API call to a loader, action, or resource route, adding an endpoint wrapper, creating a protected or guest route layout, writing auth middleware, or testing a wrapper or loader.
-
-### `x-create-issue`
-
-User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI.
-
-It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured trackers. If no publishing tool is available, it returns a title and body ready to paste.
-
-### `x-issue-comment`
-
-User-invoked only. Posts one short, professional comment on a tracker issue about the work done in the current conversation and branch.
-
-```text
-/x-issue-comment        short status update
-/x-issue-comment qa     caveman-terse QA handoff: changed, test steps, regression risk
-```
-
-Describes behavior, not code. Uses the same tracker and tool detection as `x-create-issue`; prints the comment ready to paste if no tool is available.
-
-### `x-design-patterns`
-
-Finds the design pattern that fits a concrete situation, or rejects one when a plain TypeScript feature suffices. Catalog and rationale follow refactoring.guru; examples are rewritten as idiomatic TypeScript (functions, closures, discriminated unions) with the class form noted where it earns its place.
-
-```text
-SKILL.md                 symptom → pattern table, rules, anti-signals
-references/<pattern>.md  intent, use when, do not use when, TS example, pitfalls, related
-```
-
-Use when structuring new code, refactoring conditionals, duplication, or coupling, reviewing an abstraction, or when a pattern is named.
-
-### `x-playwright-cli`
-
-Provides browser automation for frontend validation:
-
-* navigation
-* forms
-* interactions
-* console errors
-* network failures
-* screenshots
-* user flows
-
-The body and `references/` are a copy of the skill bundled with `@playwright/cli`; only the frontmatter and the `Local rules` section are ours. To sync after a CLI update:
-
-```bash
-bun add -g @playwright/cli@latest
-src=~/.bun/install/global/node_modules/@playwright/cli/skills/playwright-cli
-diff -r "$src" ~/.ai/skills/playwright-cli   # review, then copy the changed upstream files
-```
-
-Keep `name: x-playwright-cli`, the local description and `allowed-tools`, and the `Local rules` section.
-
-### `x-ship-check`
-
-User-invoked only. Final pre-launch verification for any product type: website, web app, internal tool, backend/API, worker, CLI, or mobile app. Detects the product type, runs the project's own checks, walks the matching checklists, and reports findings with evidence and a ship verdict. Changes nothing.
-
-```text
-/x-ship-check
-/x-ship-check api https://staging.example.com
-```
-
-Report sections: Performance, Security, Best practices, UX, Maintainability, plus "Needs confirmation" for what the repo cannot prove (DNS, backups, store settings). Checklists live in `references/` (core, web, backend, mobile) and load by product type.
-
-### `x-wait-what`
-
-User-invoked only. Re-explains the last message as a smart caveman: short line, 3–6 steps, why, next action. Keeps real terms and `path:line` references. Runs on Haiku at low effort to save tokens. Pass the confusing part to narrow it.
-
-```text
-/x-wait-what
-```
-
-### `x-ask-skill`
-
-User-invoked only. Reads the current session and recommends the best-fitting skill: shared `~/.ai` skills first (including manual-only ones the agent cannot see), other installed skills only when they fit better. Returns the pick, the exact command with arguments filled from context, at most one alternative, or "no skill needed". Never runs the pick without a yes. Pass a short problem to steer it.
-
-```text
-/x-ask-skill
-```
-
-### `x-design-system-board`
-
-User-invoked only. Generates a design system documentation board (sections DS-00 to DS-05) with dark-theme, tech-blue defaults. Pass product, theme, or brand color to override the defaults.
-
-```text
-/x-design-system-board
-```
-
-### `x-model-router`
-
-User-invoked only. Asks Jev (TypeSafe) which of the current host's available models best fits a task. Sends the task description and per-model criteria to `https://api.typesafe.ai/v1/systemone`; needs `TYPESAFE_API_KEY` in the environment.
-
-```text
-/x-model-router
-```
-
-## Agents
-
-Canonical agents live under:
-
-```text
-~/.ai/agents/
-```
-
-### Debugger
-
-Investigates failures and traces symptoms to root cause before recommending smallest fix.
-
-### Frontend Validator
-
-Validates changed UI behavior in browser, preferably using Playwright CLI.
-
-### Security Reviewer
-
-Reviews changed attack surface for concrete security vulnerabilities and trust-boundary problems.
-
-### Builder
-
-Implements a decided change (approved spec, known-cause fix, mechanical multi-file edit) on Haiku at medium effort, then stops. Spawned proactively; limited to Read, Edit, Write, Bash, and Skill.
-
-### Verifier
-
-Runs the feature, adds edge-case tests at high effort, reports problems without changing code.
-
-Claude and Antigravity consume shared Markdown agent definitions directly.
-
-Codex requires TOML definitions, generated from every `agents/*.md` (description and `codex-*` keys come from the frontmatter) with:
-
-```bash
-~/.ai/scripts/sync-codex-agents.sh
-```
-
-## Safety
-
-Safety-critical behavior should not depend only on prompt instructions.
-
-Provider-level permissions protect operations such as:
-
-```text
-git add / commit / push    → approval
-force push                 → blocked
-git reset --hard           → blocked
-destructive git clean      → blocked
-sensitive credential reads → blocked or approval
-```
-
-Exact provider configuration remains provider-specific.
-
-## Token Efficiency
-
-Setup uses two complementary tools:
-
-**RTK** compresses shell/tool output.
-
-**Ponytail** encourages smaller implementations, YAGNI, and fewer unnecessary abstractions.
-
-They solve different problems and can be used together.
-
-Context-heavy MCP servers are avoided when lightweight CLI/skill alternatives exist.
-
-Examples:
-
-```text
-Context7 CLI   instead of Context7 MCP
-Playwright CLI instead of Playwright MCP
-```
-
-## Project-Level Context
-
-Global configuration must not describe individual projects.
-
-Project owns:
-
-* architecture
-* domain terminology
-* framework versions
-* project commands
-* deployment constraints
-* feature specifications
-
-OpenSpec is used for project-level specification and change workflows.
-
-Separation:
-
-```text
-GLOBAL.md
-→ universal behavior
-
-global skills
-→ reusable specialized knowledge
-
-project context
-→ repository-specific knowledge
-
-OpenSpec
-→ feature/change specifications
-```
-
-## Bootstrap
-
-`bootstrap.sh` recreates shared links and generated configuration.
-
-Preview:
-
-```bash
-DRY_RUN=1 ~/.ai/bootstrap.sh
-```
-
-Apply:
-
-```bash
-~/.ai/bootstrap.sh
-```
-
-Bootstrap does not own every provider setting. Provider-specific permissions, credentials, authentication, and local-only settings remain outside shared configuration unless explicitly templated.
-
-## Doctor
-
-Run health check:
-
-```bash
-~/.ai/scripts/doctor.sh
-```
-
-It validates:
-
-* required files
-* symlinks
-* skills
-* agents
-* generated Codex agents
-* script syntax and permissions
-* JSON/TOML syntax
-* important CLI availability
-* selected integrations
-
-Doctor is read-only.
-
-## Maintenance
-
-After changing shared agents:
-
-```bash
-~/.ai/scripts/sync-codex-agents.sh
-```
-
-After changing bootstrap:
-
-```bash
-bash -n ~/.ai/bootstrap.sh
-DRY_RUN=1 ~/.ai/bootstrap.sh
-```
-
-After any setup change:
-
-```bash
-~/.ai/scripts/doctor.sh
-```
-
-Optional shell validation:
-
-```bash
-shellcheck ~/.ai/bootstrap.sh
-shellcheck ~/.ai/scripts/*.sh
-```
-
-## Design Principles
-
-Keep global context small.
-
-Use skills for specialized knowledge.
-
-Keep project context inside project.
-
-Prefer existing provider capabilities over duplicate tooling.
-
-Keep one canonical source whenever possible.
-
-Avoid storing credentials, tokens, or machine-specific secrets in this repository.
-
-## Summary
-
-```text
-                    ~/.ai/
-                      │
-          ┌───────────┼───────────┐
-          │           │           │
-      GLOBAL.md     skills      agents
-          │           │           │
-          └───────────┼───────────┘
-                      │
-              provider adapters
-                      │
-          Claude / Codex / Antigravity
-```
-
-This repository provides one maintainable configuration layer for multiple coding agents while keeping permanent context small and specialized behavior on demand.
+* Put new specialized knowledge in a skill (`skills/<name>/SKILL.md`), not in `GLOBAL.md`.
+* Add a new skill or agent to [docs/skills.md](docs/skills.md) or [docs/agents.md](docs/agents.md).
+* Run the checks under [Testing](#testing).
+* Never commit credentials, tokens, `.env` values, or machine-specific paths.
 
 ## License
 
