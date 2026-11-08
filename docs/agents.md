@@ -16,11 +16,11 @@ Reviews changed attack surface for concrete security vulnerabilities and trust-b
 
 ## Builder
 
-Implements a decided change (approved spec, known-cause fix, mechanical multi-file edit) on Haiku at medium effort, then stops. Spawned proactively; limited to Read, Edit, Write, Bash, and Skill.
+Implements a decided change (approved spec, known-cause fix, mechanical multi-file edit) on Haiku at high effort, then stops. Spawned proactively; limited to Read, Edit, Write, Bash, and Skill.
 
 ## Verifier
 
-Runs the feature, adds edge-case tests at high effort, reports problems without changing code.
+Runs the feature, adds edge-case tests at medium effort, reports problems without changing code.
 
 Claude and Antigravity consume shared Markdown agent definitions directly.
 
@@ -37,8 +37,8 @@ The generated TOML uses `codex-sandbox` from the frontmatter and defaults to `sa
 
 Taken from each file's frontmatter (`model`/`effort` for Claude, `codex-*` for Codex):
 
-* `builder`: Claude `haiku`/medium; Codex `gpt-6-luna`/medium, `workspace-write`; tools limited to Read, Edit, Write, Bash, Skill.
-* `debugger`: Claude `opus`/high; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
-* `frontend-validator`: Claude `haiku`/medium; Codex `gpt-6-luna`/high, `workspace-write`.
-* `security-reviewer`: Claude `opus`/high; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
-* `verifier`: Claude `opus`/high; Codex `gpt-6.1-sol`/high, `workspace-write`.
+* `builder`: Claude `haiku`/high; Codex `gpt-6.1-terra`/high, `workspace-write`; tools limited to Read, Edit, Write, Bash, Skill.
+* `debugger`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
+* `frontend-validator`: Claude `haiku`/high; Codex `gpt-6.1-terra`/high, `workspace-write`.
+* `security-reviewer`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
+* `verifier`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, `workspace-write`.

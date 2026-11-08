@@ -2,8 +2,8 @@
 name: frontend-validator
 description: Validates changed frontend behavior in real browser using available browser automation, preferably Playwright CLI.
 model: haiku
-effort: medium
-codex-model: gpt-6-luna
+effort: high
+codex-model: gpt-6.1-terra
 codex-effort: high
 codex-sandbox: workspace-write
 ---

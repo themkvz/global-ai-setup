@@ -75,12 +75,12 @@ Avoid:
 
 Delegate independent, non-trivial subtasks; keep simple ones in the main agent. Pick the cheapest model that fits and set model and effort explicitly:
 
-| Work                                                | GPT  | Claude | Effort |
-| --------------------------------------------------- | ---- | ------ | ------ |
-| Focused search, summary, mechanical edit            | luna | haiku  | low    |
-| Routine implementation, bounded bug fix             | luna | haiku  | medium |
-| Hard debugging, design, correctness review          | sol  | opus   | high   |
-| A lower tier failed twice, or an unresolved blocker | sol  | opus   | max    |
+| Work                                                                      | GPT        | Claude                                          |
+| ------------------------------------------------------------------------- | ---------- | ----------------------------------------------- |
+| Focused search, summary, mechanical repetitive edit                       | terra/high | haiku/medium                                    |
+| Bounded task from a ready plan or spec, multi-file, checks its own work   | terra/high | haiku/high                                      |
+| Executor at high misses dependencies, or the task stays hard              | sol/high   | haiku/max                                       |
+| Planning, research, hard debugging, complex changes, review, verification | sol/high   | opus/medium (low for clear edits, few unknowns) |
 
 Once what to change is decided (approved spec, known-cause fix, mechanical edit) and it spans more than a few lines or one file, hand it to the `builder` agent instead of editing inline: name the files and the exact change, not the whole conversation.
 

@@ -3,7 +3,7 @@ name: debugger
 description: Investigates bugs, errors, failing tests, and unexpected behavior. Finds root cause before recommending smallest fix.
 disallowedTools: Edit, Write, NotebookEdit
 model: opus
-effort: high
+effort: medium
 codex-model: gpt-6.1-sol
 codex-effort: high
 ---

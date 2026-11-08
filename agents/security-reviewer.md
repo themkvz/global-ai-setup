@@ -3,7 +3,7 @@ name: security-reviewer
 description: Reviews security-sensitive changes for concrete exploitable vulnerabilities and trust-boundary problems.
 disallowedTools: Edit, Write, NotebookEdit
 model: opus
-effort: high
+effort: medium
 codex-model: gpt-6.1-sol
 codex-effort: high
 ---

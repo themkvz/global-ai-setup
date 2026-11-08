@@ -3,9 +3,9 @@ name: builder
 description: Implements a decided code change on a cheaper model, then stops. Use proactively once what to change is clear and the edit is more than a few lines or touches more than one file - an approved feature spec, a bug fix with a known cause, or a mechanical edit across files. Not for design, finding an unknown cause, or review.
 tools: Read, Edit, Write, Bash, Skill
 model: haiku
-effort: medium
-codex-model: gpt-6-luna
-codex-effort: medium
+effort: high
+codex-model: gpt-6.1-terra
+codex-effort: high
 codex-sandbox: workspace-write
 ---
 
