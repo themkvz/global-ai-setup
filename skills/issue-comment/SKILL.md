@@ -3,6 +3,7 @@ name: x-issue-comment
 description: Post a short, professional status comment on a Linear, Jira, Azure DevOps, GitHub, GitLab, or other tracker issue about the work done in the current conversation and branch. Default variant is a brief status update; the `qa` variant explains what changed and what the QA team should check.
 argument-hint: "[qa] [issue keys or URLs] [preview URL] [focus]"
 disable-model-invocation: true
+effort: medium
 ---
 
 # Issue Comment
@@ -22,7 +23,8 @@ Readers are product managers, leads, other developers, and QA. Most of them read
 2. **Issue.** Find the issue in this order: the arguments, the conversation, an issue key in the branch name (`ENG-123`, `PROJ-45`, `AB#123`, `123-fix-login`), recent commit messages. If none is found or the signals conflict, ask. For several issues, post one comment on each, about that issue's own part of the work.
 3. **Tracker and tool.** Infer the tracker from, in order: the user's words, project instructions (`CLAUDE.md`, `AGENTS.md`), the issue key format, then the git remote host. An issue key beats the remote host: many GitHub repos track work in Linear or Jira. Prefer a connected MCP tool; otherwise an installed, authenticated CLI (a Linear CLI, `acli`/`jira`, `az boards`, `gh issue comment`, `glab issue note`). Check a CLI's `--help` before the first call. Only add a comment: do not change the issue's status, assignee, or labels.
 4. **Read the issue.** Fetch its title, description, and acceptance criteria, and skim recent comments. The comment answers this issue: refer to its acceptance criteria, use its terms, and do not repeat what earlier comments already say. Write in the language the issue uses.
-5. **Gather the facts.** Start from the conversation. Then fill gaps from the branch: `git log <base>..HEAD --oneline`, `git diff <base>...HEAD --stat`, and the full diff only where the behavior change is unclear. Find the base from the PR, or `main`/`master`. Get the PR link if one exists (`gh pr view --json url`, `glab mr view`). For QA, look at what else uses the changed code: that is where regressions hide.6. **Write** the comment in the variant's format below, in the tracker's native format (Jira may need wiki markup or ADF depending on the tool; Azure DevOps comments are HTML). With a CLI, pass the body through a file or heredoc so newlines and backticks survive.
+5. **Gather the facts.** Start from the conversation. Then fill gaps from the branch: `git log <base>..HEAD --oneline`, `git diff <base>...HEAD --stat`, and the full diff only where the behavior change is unclear. Find the base from the PR, or `main`/`master`. Get the PR link if one exists (`gh pr view --json url`, `glab mr view`). For QA, look at what else uses the changed code: that is where regressions hide.
+6. **Write** the comment in the variant's format below, in the tracker's native format (Jira may need wiki markup or ADF depending on the tool; Azure DevOps comments are HTML). With a CLI, pass the body through a file or heredoc so newlines and backticks survive.
 7. **Post and report.** In one line, return the issue key and title and the comment URL (or the issue URL if the tool gives none), so a wrongly guessed issue is easy to spot. If no suitable authenticated tool exists, name the MCP or CLI needed and print the comment ready to paste.
 
 ## Writing rules (both variants)

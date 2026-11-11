@@ -33,23 +33,24 @@ so everyone who installs it gets the same grant.
 
 ## Current state
 
-`skills/ask-skill/SKILL.md` (48 lines). The frontmatter:
+`skills/ask-skill/SKILL.md` (49 lines). The frontmatter:
 
 ```yaml
-# skills/ask-skill/SKILL.md:1-7
+# skills/ask-skill/SKILL.md:1-8
 ---
 name: x-ask-skill
 description: "Not sure which skill fits? Read the current session, match it against the shared ~/.ai skills (and other installed skills if they fit better), and recommend one with the exact command to run it."
 argument-hint: "[problem, optional]"
 disable-model-invocation: true
 allowed-tools: Bash(head *) Read(~/.ai/skills/**)
+effort: low
 ---
 ```
 
 The only shell command in the body:
 
 ```bash
-# skills/ask-skill/SKILL.md:21-23
+# skills/ask-skill/SKILL.md:22-24
 head -n 20 ~/.ai/skills/*/SKILL.md
 ```
 
@@ -76,7 +77,7 @@ line. Another example in this repository is `skills/playwright-cli/SKILL.md`:
 **Out of scope** (do NOT touch):
 
 - The body of `skills/ask-skill/SKILL.md`, including the `head` command at
-  line 22. The rule is written to match that command exactly.
+  line 23. The rule is written to match that command exactly.
 - `allowed-tools` of other skills (`skills/playwright-cli/SKILL.md`): they are
   scoped to one CLI on purpose.
 - `docs/skills.md` — it does not mention `allowed-tools`.
@@ -110,7 +111,7 @@ allowed-tools: Bash(head -n 20 ~/.ai/skills/*/SKILL.md) Read(~/.ai/skills/**)
 
 **Verify**: `grep -c 'Bash(head -n 20 ~/.ai/skills/\*/SKILL.md)' skills/ask-skill/SKILL.md` → `1`
 
-**Verify**: `sed -n '22p' skills/ask-skill/SKILL.md` → exactly
+**Verify**: `sed -n '23p' skills/ask-skill/SKILL.md` → exactly
 `head -n 20 ~/.ai/skills/*/SKILL.md` (the body command still matches the rule
 text character for character).
 
@@ -136,7 +137,7 @@ ALL must hold:
 Stop and report back (do not improvise) if:
 
 - Line 6 does not match the excerpt in "Current state".
-- The `head` command in the body (line 22) is different from
+- The `head` command in the body (line 23) is different from
   `head -n 20 ~/.ai/skills/*/SKILL.md`. The rule must match the real command;
   report both lines instead of guessing a new rule.
 

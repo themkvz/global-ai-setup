@@ -23,36 +23,8 @@
 - Handle errors where failure can realistically occur; don't guard trusted internal guarantees.
 - Use the project's package manager and let it manage lock files.
 - After 2–3 failed attempts at the same fix, stop and report what was tried and what is known.
-
-## Code style defaults
-
-For new code when the project has no convention. Technology choices live in the `x-preferred-stack` skill.
-
-General:
-
-- Strict type checking; lint + format in a pre-commit hook; example env file. Containerize deployable services.
-- Organize by feature/domain; each feature owns its data access, validation, and UI. Shared generic code in a common layer. Backend: separate routes, handlers, and validation.
-- Named constants instead of magic numbers, with the unit in the name or comment. `is`/`has` booleans.
-- Validate every external input (env, forms, requests, API responses) with a schema kept next to its inferred type. Generate types from the source of truth (OpenAPI, DB schema).
-- Early returns; small pure functions; immutable updates; independent async work in parallel.
-- Errors: reads may log with context and return a safe fallback; writes must surface failure. The HTTP layer maps failures to status codes and user-facing messages.
-- Security: hashed passwords, httpOnly/secure cookies, generic auth errors, no stack traces in production.
-- Tests: cover the risky core (state logic, auth, error handling), not coverage numbers. Behavior-named, integration-style where practical. Add a regression test with bug fixes.
-
-TypeScript/JavaScript:
-
-- 2-space indent, single quotes, no semicolons, ~100 line width, sorted imports, path aliases over deep relative imports.
-- kebab-case files, PascalCase components/types, camelCase functions/variables, SCREAMING_SNAKE constants, `handle` event handlers, `use` hooks.
-- Functions and closures over classes.
-- Frontend state: URL for navigation state, query cache for server state, a small store for client-only state.
-- Accessible UI components with variant-based APIs.
-
-Avoid:
-
-- Returning an un-awaited promise inside try/catch, so the catch never fires.
-- Commented-out code or debug logs.
-- Repeated markup instead of mapping over data.
-- Typos in identifiers or UI strings; mixed languages in user-facing text.
+- No commented-out code, debug logs, or typos in identifiers and UI strings.
+- New code where the project has no convention: load the `x-preferred-stack` skill for stack and code style defaults.
 
 ## Verification
 
@@ -75,12 +47,13 @@ Avoid:
 
 Delegate independent, non-trivial subtasks; keep simple ones in the main agent. Pick the cheapest model that fits and set model and effort explicitly:
 
-| Work                                                                      | GPT        | Claude                                          |
+| Work                                                                      | Codex      | Claude                                          |
 | ------------------------------------------------------------------------- | ---------- | ----------------------------------------------- |
-| Focused search, summary, mechanical repetitive edit                       | terra/high | haiku/medium                                    |
-| Bounded task from a ready plan or spec, multi-file, checks its own work   | terra/high | haiku/high                                      |
-| Executor at high misses dependencies, or the task stays hard              | sol/high   | haiku/max                                       |
+| Build from a ready plan or spec                                           | terra/high | haiku/high                                      |
+| Simple daily task without a plan, or a medium task                        | terra/high | haiku/max                                       |
 | Planning, research, hard debugging, complex changes, review, verification | sol/high   | opus/medium (low for clear edits, few unknowns) |
+
+Use other models (`sonnet`, `fable`, `astra`) or efforts only when the user asks.
 
 Once what to change is decided (approved spec, known-cause fix, mechanical edit) and it spans more than a few lines or one file, hand it to the `builder` agent instead of editing inline: name the files and the exact change, not the whole conversation.
 
@@ -104,7 +77,3 @@ Without subagents, run the same steps inline.
 - Use full sentences for destructive-action warnings, ordered procedures, and clarifying questions.
 - Answer the requested scope; add risks or alternatives only when they change the decision.
 - If the user's English message has a mistake, end the reply with a one-line correction and a brief reason.
-
-## TypeSafe
-
-Use the `typesafe-ai` skill when an application feature needs semantic judgment over natural language or unstructured state, called from app code via SDK or HTTP API. Not for the agent's own reasoning, code generation, or debugging. Primitives: Choice (pick one of a set), Score (position on a spectrum), Noul (yes/no probability of one condition); gating, escalation, and second review are code patterns around them.

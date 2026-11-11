@@ -4,6 +4,7 @@ description: "Not sure which skill fits? Read the current session, match it agai
 argument-hint: "[problem, optional]"
 disable-model-invocation: true
 allowed-tools: Bash(head *) Read(~/.ai/skills/**)
+effort: low
 ---
 
 # Ask Skill

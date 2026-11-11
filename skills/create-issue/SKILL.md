@@ -3,6 +3,7 @@ name: x-create-issue
 description: Create one concise issue from the current conversation on Linear, Jira, Azure DevOps, GitHub, GitLab, or another configured tracker, using an available MCP integration or installed CLI.
 argument-hint: "[focus, tracker, or project]"
 disable-model-invocation: true
+effort: medium
 ---
 
 # Create Issue

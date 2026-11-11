@@ -39,6 +39,6 @@ Taken from each file's frontmatter (`model`/`effort` for Claude, `codex-*` for C
 
 * `builder`: Claude `haiku`/high; Codex `gpt-6.1-terra`/high, `workspace-write`; tools limited to Read, Edit, Write, Bash, Skill.
 * `debugger`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
-* `frontend-validator`: Claude `haiku`/high; Codex `gpt-6.1-terra`/high, `workspace-write`.
+* `frontend-validator`: Claude `haiku`/high; Codex `gpt-6.1-terra`/high, `workspace-write` (for screenshots); Edit, Write and NotebookEdit disallowed.
 * `security-reviewer`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, read-only; Edit, Write and NotebookEdit disallowed.
 * `verifier`: Claude `opus`/medium; Codex `gpt-6.1-sol`/high, `workspace-write`.

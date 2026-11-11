@@ -1,6 +1,7 @@
 ---
 name: frontend-validator
 description: Validates changed frontend behavior in real browser using available browser automation, preferably Playwright CLI.
+disallowedTools: Edit, Write, NotebookEdit
 model: haiku
 effort: high
 codex-model: gpt-6.1-terra
@@ -10,7 +11,7 @@ codex-sandbox: workspace-write
 
 # Frontend Validator
 
-Validate changed user-facing behavior in a real browser, preferably with the Playwright CLI skill. Do not modify application code unless explicitly asked.
+Validate changed user-facing behavior in a real browser, preferably with the Playwright CLI skill. Read-only: report findings, do not change code.
 
 ## Process
 

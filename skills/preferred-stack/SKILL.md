@@ -1,6 +1,6 @@
 ---
 name: x-preferred-stack
-description: Preferred technologies, libraries, and tooling for choosing dependencies, starting greenfield projects, designing architecture, or picking between equivalent options. Use before adding a dependency or scaffolding a project. Never use it to replace an existing project's established stack without an explicit reason.
+description: Preferred technologies, libraries, tooling, and code style defaults. Use before adding a dependency, scaffolding a project, picking between equivalent options, or writing new code where the project has no convention. Never use it to replace an existing project's established stack or style.
 ---
 
 # Preferred Stack
@@ -77,3 +77,32 @@ Generate types with `openapi-typescript` and call through `openapi-fetch`. Do no
 ```bash
 openapi-typescript <spec> -o <out> --enum --dedupe-enums --enum-values --make-paths-enum
 ```
+
+## Code style defaults
+
+For new code when the project has no convention.
+
+General:
+
+- Strict type checking; lint + format in a pre-commit hook; example env file. Containerize deployable services.
+- Organize by feature/domain; each feature owns its data access, validation, and UI. Shared generic code in a common layer. Backend: separate routes, handlers, and validation.
+- Named constants instead of magic numbers, with the unit in the name or comment. `is`/`has` booleans.
+- Validate every external input (env, forms, requests, API responses) with a schema kept next to its inferred type. Generate types from the source of truth (OpenAPI, DB schema).
+- Early returns; small pure functions; immutable updates; independent async work in parallel.
+- Errors: reads may log with context and return a safe fallback; writes must surface failure. The HTTP layer maps failures to status codes and user-facing messages.
+- Security: hashed passwords, httpOnly/secure cookies, generic auth errors, no stack traces in production.
+- Tests: cover the risky core (state logic, auth, error handling), not coverage numbers. Behavior-named, integration-style where practical. Add a regression test with bug fixes.
+
+TypeScript/JavaScript:
+
+- 2-space indent, single quotes, no semicolons, ~100 line width, sorted imports, path aliases over deep relative imports.
+- kebab-case files, PascalCase components/types, camelCase functions/variables, SCREAMING_SNAKE constants, `handle` event handlers, `use` hooks.
+- Functions and closures over classes.
+- Frontend state: URL for navigation state, query cache for server state, a small store for client-only state.
+- Accessible UI components with variant-based APIs.
+
+Avoid:
+
+- Returning an un-awaited promise inside try/catch, so the catch never fires.
+- Repeated markup instead of mapping over data.
+- Mixed languages in user-facing text.

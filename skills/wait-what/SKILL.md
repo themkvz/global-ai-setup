@@ -3,7 +3,6 @@ name: x-wait-what
 description: "Stop. The last message did not land: explain it again as a smart caveman, in short plain steps, keeping the real technical terms."
 argument-hint: "[the part that confused you]"
 disable-model-invocation: true
-model: haiku
 effort: low
 ---
 
