@@ -85,14 +85,14 @@ It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured tra
 
 ## `x-issue-comment`
 
-User-invoked only. Posts one short, professional comment on a tracker issue about the work done in the current conversation and branch.
+User-invoked only. Posts one concise, factual comment per tracker issue using the same Context, Changes, Checks, and optional Notes structure.
 
 ```text
-/x-issue-comment        short status update
-/x-issue-comment qa     caveman-terse QA handoff: changed, test steps, regression risk
+/x-issue-comment        concise comment
+/x-issue-comment qa     comment with detailed, reproducible checks
 ```
 
-Describes behavior, not code. Uses the same tracker and tool detection as `x-create-issue`; prints the comment ready to paste if no tool is available.
+Checks distinguish observed results from suggested QA steps. Empty Checks and Notes are omitted. Uses the same tracker and tool detection as `x-create-issue`; prints the comment ready to paste if no tool is available.
 
 ## `x-design-patterns`
 
