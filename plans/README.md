@@ -9,7 +9,7 @@ your row when done.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| [001](001-smoke-test-and-ci.md) | Smoke test in a throwaway home folder, plus CI | P1 | S | — | TODO |
+| [001](001-smoke-test-and-ci.md) | Smoke test in a throwaway home folder, plus CI | P1 | S | — | DONE (local checks passed; hosted CI pending) |
 | [002](002-prune-stale-links-and-codex-agents.md) | Prune links and Codex agents of removed skills and agents; reject unsupported frontmatter | P1 | S | 001 | TODO |
 | [003](003-content-based-codex-stale-check.md) | `doctor.sh` compares Codex agents by content | P2 | S | 001, after 002 | TODO |
 | [004](004-narrow-ask-skill-allowed-tools.md) | Narrow `x-ask-skill` `allowed-tools` | P3 | S | — | TODO |

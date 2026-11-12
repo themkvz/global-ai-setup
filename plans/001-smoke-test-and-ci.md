@@ -21,6 +21,28 @@
 - **Category**: tests
 - **Planned at**: commit `a98665a`, 2026-11-11
 
+## Approved execution adjustments
+
+Reviewed against `80bc716` on 2026-11-12: production scripts and README have not drifted.
+These adjustments override the original instructions below:
+
+- Work in the current workspace, without a git worktree, branch change, or commit, as requested by the owner.
+- Copy `GLOBAL.md`, `bootstrap.sh`, `agents/`, `skills/`, and `scripts/` into `$TEST_HOME/.ai` instead of symlinking the repository. Bootstrap runs `chmod` on scripts; the test must affect only the copy.
+- Keep the test shell's `HOME` unchanged. Use `$TEST_HOME` for assertions and pass the temporary home only to child processes with `env HOME="$TEST_HOME"`.
+- Check that dry run creates none of the six tool folders. After the second bootstrap run, confirm the original backup is intact.
+- Use `actions/checkout@v7`, based on the current [official release](https://github.com/actions/checkout/releases/tag/v7.0.1).
+- Describe CI triggers precisely: pushes to `main` and pull requests. ShellCheck runs on Linux; syntax and smoke tests run on both operating systems.
+- Check the script's executable bit without staging it. The reviewer updates the plan index after local verification.
+
+## Execution result
+
+Completed in the current workspace on 2026-11-12, without a worktree or commit.
+
+- `scripts/test.sh`: all 7 checks passed on macOS Bash 3.2.
+- Per-file `bash -n`, Ruby YAML parsing, executable-bit check, and `git diff --check`: passed.
+- `bootstrap.sh`, `scripts/doctor.sh`, and `scripts/sync-codex-agents.sh`: unchanged from the planned baseline.
+- ShellCheck was not installed, so its CI step was not verified locally. Hosted Linux and macOS jobs have not run.
+
 ## Why this matters
 
 This repository is public and its scripts write into the user's home folder

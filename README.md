@@ -14,6 +14,7 @@ Write your agent instructions, skills, and subagents once in `~/.ai`, and link t
 * **Codex agent generation.** Markdown agents are converted to the TOML format Codex needs.
 * **Safe bootstrap.** A dry-run mode, plus backups of files it replaces.
 * **Health check.** `doctor.sh` checks links, skills, agents, script syntax, JSON/TOML configs, and installed CLIs.
+* **Smoke test and CI.** `scripts/test.sh` runs bootstrap, sync, and doctor against a throwaway home folder. GitHub Actions runs it on Linux and macOS.
 
 ## Architecture
 
@@ -121,16 +122,17 @@ Bootstrap doesn't touch tool permissions, credentials, authentication, or other 
 ├── skills/<name>/SKILL.md        shared skills, some with references/
 ├── scripts/
 │   ├── doctor.sh                 health check
+│   ├── test.sh                   smoke test in a throwaway home folder
 │   └── sync-codex-agents.sh      agents/*.md → ~/.codex/agents/*.toml
 └── docs/                         skill and agent reference
 ```
 
 ## Testing
 
-There is no automated test suite or CI. Before committing, run:
+CI runs syntax checks and the smoke test on Linux and macOS, and ShellCheck on Linux, for pushes to `main` and pull requests. Before committing, run the smoke test. It uses a temporary home folder and never touches your real one:
 
 ```bash
-bash -n ~/.ai/bootstrap.sh ~/.ai/scripts/*.sh
+~/.ai/scripts/test.sh
 ```
 
 ```bash

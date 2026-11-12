@@ -1,0 +1,31 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Syntax
+        run: |
+          for f in bootstrap.sh scripts/*.sh; do
+            bash -n "$f"
+          done
+
+      - name: ShellCheck
+        if: runner.os == 'Linux'
+        run: shellcheck bootstrap.sh scripts/*.sh
+
+      - name: Smoke test
+        run: scripts/test.sh
