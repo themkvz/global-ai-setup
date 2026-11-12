@@ -24,10 +24,19 @@ Invoking this skill is the approval to create the issue. Do not ask for a draft 
    - GitLab: GitLab MCP or `glab issue create`
 4. **Duplicates.** Run a quick search for open issues with the key terms. If a clear match exists, return it instead of creating a new one and offer to add a comment with `/x-issue-comment`. Skip this step if the tool has no search.
 5. **Defaults.** Take team, project, issue type, labels, area, and iteration from project instructions, issue templates (`.github/ISSUE_TEMPLATE/`, `.gitlab/issue_templates/`), or the tracker's defaults. Omit any field you cannot justify; never invent labels or assign someone unless asked. Ask one focused question only for a value the tracker requires and nothing supplies.
-6. **Create.** Write the issue in the language of the project's existing issues, in the tracker's native format (Azure DevOps descriptions are HTML; Jira may need wiki markup or ADF depending on the tool). With a CLI, pass the body through a file or heredoc (`--body-file`) so newlines and backticks survive shell quoting.
-7. **Report.** Return the identifier, title, and URL in one line. If no suitable authenticated tool exists, name the MCP or CLI needed and print the final title and body ready to paste.
+6. **Format.** Use the user's explicit format first, then the applicable tracker or repo issue template. Otherwise inspect 2–3 recent, relevant issues in the same project or team and of the same type, if available. Match the recurring title convention, language, headings and order, detail level, and acceptance criteria style. If examples vary, use the closest issue type. Copy structure only, never facts, status, people, or labels. Use the formats below only when no usable pattern is accessible. Keep required template fields; state unknown facts as unknown, or ask only when required for a valid, actionable issue. Never invent reproduction steps.
+7. **Create.** Write in the tracker's native format (Azure DevOps descriptions are HTML; Jira may need wiki markup or ADF depending on the tool). With a CLI, pass the body through a file or heredoc (`--body-file`) so newlines and backticks survive shell quoting. Before creating, check that every statement is supported, the problem and outcome are clear, required fields are present, and limits, negations, numbers, and units are intact.
+8. **Report.** Return the identifier, title, and URL in one line. If no suitable authenticated tool exists, name the MCP or CLI needed and print the final title and body ready to paste.
 
-## Issue format
+## Writing rules
+
+- Describe the known problem and desired outcome, not a claim that the work is already complete.
+- Use short, plain words: "fix", not "implement a solution for". Standard acronyms such as DB, API, and HTTP are fine; do not invent abbreviations such as cfg, impl, or fn. Do not use arrows.
+- Cut filler, ceremony, greetings, closers, and emojis. Omit branch, push, delivery, readiness, and workflow status updates.
+- Fragments are fine. Omit articles only when the result is readable. Keep words such as not, never, no, only, and except, as well as exact numbers and units.
+- Preserve safety instructions, for example: "Back up first. Then run migration: it drops the column."
+
+## Fallback issue format
 
 **Title:** action-oriented, under 80 characters. Features and tasks: imperative (`Add retry to invoice sync`). Bugs: the symptom (`Invoice sync drops items after timeout`).
 
@@ -63,7 +72,7 @@ Invoking this skill is the approval to create the issue. Do not ask for a draft 
 - [ ] <Verifiable result, usually "expected behavior holds" plus a regression check>
 ```
 
-Drop `Steps to reproduce` when they are unknown rather than guessing. When the repo has an issue template for the type, follow its headings instead.
+Drop `Steps to reproduce` when they are unknown rather than guessing.
 
 Add a short `## Context` section only when the reason or constraint would otherwise be lost: a decision already made, a linked issue or PR, an error message line. Leave out implementation plans, file lists, conversation transcripts, and speculation.
 

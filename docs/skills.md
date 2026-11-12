@@ -79,7 +79,7 @@ Use when adding an API call to a loader, action, or resource route, adding an en
 
 ## `x-create-issue`
 
-User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI.
+User-invoked only. Creates one concise issue from the current conversation using a connected tracker MCP integration or an installed, authenticated CLI. Matches an explicit format, an applicable issue template, or recent relevant issues before using its fallback format.
 
 It supports Linear, Jira, Azure DevOps, GitHub, GitLab, and other configured trackers. If no publishing tool is available, it returns a title and body ready to paste.
 
