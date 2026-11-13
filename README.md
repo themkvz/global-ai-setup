@@ -1,4 +1,4 @@
-# Global AI Setup
+# Formain Setup
 
 A unified configuration system for AI coding agents, shared skills, and development workflows.
 
@@ -71,7 +71,7 @@ The scripts have been run on Linux with Bash 5.2 and on macOS with the system Ba
 ## Quick start
 
 ```bash
-git clone https://github.com/themkvz/global-ai-setup.git ~/.ai
+git clone https://github.com/themkvz/formain-setup.git ~/.ai
 ```
 
 Preview what bootstrap would change (nothing is written):
