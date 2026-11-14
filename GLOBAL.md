@@ -49,8 +49,7 @@ Delegate independent, non-trivial subtasks; keep simple ones in the main agent. 
 
 | Work                                                                      | Codex      | Claude                                          |
 | ------------------------------------------------------------------------- | ---------- | ----------------------------------------------- |
-| Build from a ready plan or spec                                           | terra/high | haiku/high                                      |
-| Simple daily task without a plan, or a medium task                        | terra/high | haiku/max                                       |
+| Build from a ready plan or spec, simple daily task, or a medium task      | terra/high | haiku/high                                      |
 | Planning, research, hard debugging, complex changes, review, verification | sol/high   | opus/medium (low for clear edits, few unknowns) |
 
 Use other models (`sonnet`, `fable`, `astra`) or efforts only when the user asks.
