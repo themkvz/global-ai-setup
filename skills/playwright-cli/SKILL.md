@@ -11,11 +11,26 @@ allowed-tools: Bash(playwright-cli:*) Bash(npx playwright:*)
 Everything below this section is the upstream skill from `@playwright/cli`; keep it unchanged so it can be re-synced. These rules come from real sessions and win over it.
 
 - Open a browser only when the task needs one. If the user says to skip the browser, skip it.
-- Run `playwright-cli list` first and reuse an open session; do not `open` again for each step. Close the sessions you opened when the task is done.
+- Run `playwright-cli list` first and reuse an open session; do not `open` again for each step. Close the sessions you opened when the task is done; `detach` the ones you attached.
 - Write `playwright-cli` in full in every command. Do not put it in a shell variable (`P=playwright-cli; $P open`): zsh does not word-split it, so the call fails with `command not found`.
 - A ref that times out is usually stale. Run `snapshot` or `find` again for fresh refs before retrying; do not retry the same ref.
 - Capture only what is needed (`screenshot e5`, `--filename=...`). Do not post-process images with Python or other tools.
 - Install or update with Bun: `bun add -g @playwright/cli@latest` (not `npm install -g`).
+
+### Attach to an existing browser
+
+Use `attach` instead of `open` when the user asks to use their own or an already running browser, or when the flow needs their real sign-ins (SSO, 2FA, extensions, open tabs). Otherwise launch a clean browser with `open`.
+
+- Find targets with `playwright-cli list --all`. Pick one target per `attach`:
+  - Running Chrome/Edge: `playwright-cli attach --cdp=chrome -s=chrome` (or `msedge`, `chrome-canary`, ...). The user must first enable "Allow remote debugging for this browser instance" at `chrome://inspect/#remote-debugging`.
+  - Browser started with `--remote-debugging-port=9222`, Electron, or a remote/cloud browser: `playwright-cli attach --cdp=http://localhost:9222 -s=<name>`.
+  - Playwright Extension installed: `playwright-cli attach --extension -s=<name>` (or `--extension=msedge`).
+  - Playwright server: `playwright-cli attach --endpoint=ws://localhost:3000 -s=<name>`.
+  - Paused test (`npx playwright test --debug=cli`): `playwright-cli attach <bound-name>`.
+- Always pass `-s=<name>` on `attach` and on every later command, so commands do not hit the `default` session.
+- If attach fails because remote debugging is off, ask the user to enable it. Do not quit, relaunch, or restart their browser yourself.
+- The browser holds the user's real profile. Work in a new tab (`tab-new`); do not close, reload, or navigate their existing tabs unless asked. Never run `delete-data`, `cookie-clear`, `localstorage-clear`, or `state-save` into the repo. Confirm before any outward-facing action (submit, send, buy, delete) on real accounts.
+- When done, run `playwright-cli -s=<name> detach`. Never use `close`, `close-all`, or `kill-all` on an attached session: they stop the user's browser.
 
 ## Quick start
 

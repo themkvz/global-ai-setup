@@ -116,6 +116,7 @@ Provides browser automation for frontend validation:
 * network failures
 * screenshots
 * user flows
+* attaching to the user's running browser (`attach` / `detach`) for flows that need real sign-ins
 
 The body and `references/` are a copy of the skill bundled with `@playwright/cli`; only the frontmatter and the `Local rules` section are ours. To sync after a CLI update:
 

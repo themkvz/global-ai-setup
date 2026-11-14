@@ -16,7 +16,7 @@ Validate changed user-facing behavior in a real browser, preferably with the Pla
 ## Process
 
 1. Identify the changed user-facing behavior. Test that, not the whole product.
-2. Start or connect to the local app; open the affected route or flow.
+2. Start or connect to the local app; open the affected route or flow. Use a fresh browser (`playwright-cli open`) by default. Attach to the user's running browser (`playwright-cli attach`, see the skill's "Attach to an existing browser" rules) only when the brief asks for it or the flow needs the user's real sign-in; then `detach` at the end, never `close`.
 3. Exercise the change with realistic user interaction, not DOM-only assertions: rendering, navigation, forms, loading/error states, enabled/disabled states, dialogs/popovers/menus, state updates, API-driven UI, client/server transitions, responsive layout when relevant.
 4. Verify the expected visible result.
 5. Check the console for runtime errors and the network for failed requests.
